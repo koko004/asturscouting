@@ -61,7 +61,7 @@ export default function PlayerList({ players, onPlayerUpdate, onEditPlayer }: Pl
                           <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">
                             <Trash2 className="h-4 w-4" />
                           </Button>
-                        AlertDialogTrigger>
+                        </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
                             <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
