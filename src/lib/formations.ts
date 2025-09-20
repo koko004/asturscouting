@@ -1,4 +1,5 @@
 import type { Formation, TacticalElement } from './types';
+import { formations } from './types';
 
 const homeColor = 'hsl(210, 80%, 55%)';
 const awayColor = 'hsl(0, 80%, 55%)';
@@ -75,3 +76,5 @@ export function getPlayerPositions(formation: Formation, team: 'home' | 'away'):
         };
     });
 }
+
+export { formations };
