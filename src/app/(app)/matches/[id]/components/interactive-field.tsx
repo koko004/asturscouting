@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Save, Wand2 } from 'lucide-react';
+import { Save } from 'lucide-react';
 import type { TacticalElement, Formation } from '@/lib/types';
 import { formations } from '@/lib/types';
 import { getPlayerPositions } from '@/lib/formations';
@@ -16,8 +16,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { summarizeTacticalPositioning } from '@/ai/flows/summarize-tactical-positioning';
-import SummaryModal from './summary-modal';
 
 const SoccerFieldSVG = () => (
     <svg width="100%" height="100%" viewBox="0 0 680 1050" preserveAspectRatio="none">
@@ -58,9 +56,6 @@ export default function InteractiveField({ onPlayerClick, isReadOnly = false }: 
 
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
-  const [isSummarizing, setIsSummarizing] = useState(false);
-  const [summary, setSummary] = useState('');
-  const [isSummaryModalOpen, setIsSummaryModalOpen] = useState(false);
 
   useEffect(() => {
     const homePlayers = getPlayerPositions(homeFormation, 'home');
@@ -81,35 +76,6 @@ export default function InteractiveField({ onPlayerClick, isReadOnly = false }: 
     }, 1000);
   };
   
-  const handleGenerateSummary = async () => {
-    setIsSummarizing(true);
-    try {
-      const homePlayers = elements.filter(e => e.id.startsWith('H'));
-      const awayPlayers = elements.filter(e => e.id.startsWith('A'));
-
-      const description = `
-        Alineación del equipo local (${homeFormation}): ${homePlayers.length} jugadores.
-        Alineación del equipo visitante (${awayFormation}): ${awayPlayers.length} jugadores.
-        Esta es una descripción de las posiciones de los jugadores en el campo, donde (0,0) es la esquina superior izquierda y (100,100) es la inferior derecha.
-        Equipo Local: ${homePlayers.map(p => `${p.label} en (${p.position.x.toFixed(1)}, ${p.position.y.toFixed(1)})`).join(', ')}.
-        Equipo Visitante: ${awayPlayers.map(p => `${p.label} en (${p.position.x.toFixed(1)}, ${p.position.y.toFixed(1)})`).join(', ')}.
-      `;
-
-      const result = await summarizeTacticalPositioning({ positioningDescription: description });
-      setSummary(result.summary);
-      setIsSummaryModalOpen(true);
-    } catch (error) {
-      console.error('Error generating summary:', error);
-      toast({
-        title: 'Error de IA',
-        description: 'No se pudo generar el resumen táctico.',
-        variant: 'destructive'
-      });
-    } finally {
-      setIsSummarizing(false);
-    }
-  };
-
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>, id: string) => {
     if (isReadOnly) return;
     e.currentTarget.setPointerCapture(e.pointerId);
@@ -195,9 +161,6 @@ export default function InteractiveField({ onPlayerClick, isReadOnly = false }: 
                   </SelectContent>
                 </Select>
               </div>
-              <Button size="sm" onClick={handleGenerateSummary} disabled={isSummarizing || isReadOnly} className="w-full sm:w-auto">
-                  <Wand2 className="mr-2 h-4 w-4" /> {isSummarizing ? 'Generando...' : 'Resumen Táctico (IA)'}
-              </Button>
               <Button size="sm" onClick={handleSave} disabled={isSaving || isReadOnly} className="w-full sm:w-auto">
                 <Save className="mr-2 h-4 w-4" /> {isSaving ? 'Guardando...' : 'Guardar Posiciones'}
               </Button>
@@ -240,7 +203,6 @@ export default function InteractiveField({ onPlayerClick, isReadOnly = false }: 
         </div>
       </CardContent>
     </Card>
-    <SummaryModal isOpen={isSummaryModalOpen} setIsOpen={setIsSummaryModalOpen} summary={summary} />
     </>
   );
 }
