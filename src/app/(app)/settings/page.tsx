@@ -95,18 +95,15 @@ export default function SettingsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4">
-            <div className="grid gap-2">
-                <Label htmlFor="current-password">Contraseña Actual</Label>
-                <Input id="current-password" type="password" />
-            </div>
-            <div className="grid gap-2">
-                <Label htmlFor="new-password">Nueva Contraseña</Label>
-                <Input id="new-password" type="password" />
-            </div>
-            <div className="grid gap-2">
-                <Label htmlFor="confirm-password">Confirmar Nueva Contraseña</Label>
-                <Input id="confirm-password" type="password" />
-            </div>
+              <Label htmlFor="current-password">Contraseña Actual</Label>
+              <Input id="current-password" type="password" />
+              
+              <Label htmlFor="new-password">Nueva Contraseña</Label>
+              <Input id="new-password" type="password" />
+             
+              <Label htmlFor="confirm-password">Confirmar Nueva Contraseña</Label>
+              <Input id="confirm-password" type="password" />
+
              <Button onClick={handlePasswordChange} disabled={isSaving} className="w-fit">
                 <Save className="mr-2 h-4 w-4" />
                 {isSaving ? 'Guardando...' : 'Cambiar Contraseña'}
