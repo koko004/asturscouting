@@ -60,7 +60,7 @@ export default function MatchPage() {
       />
       <div className="grid flex-1 gap-6 md:grid-cols-3 lg:grid-cols-4">
         <div className="flex flex-col gap-6 md:col-span-2 lg:col-span-3">
-          <InteractiveField players={players} onPlayerDoubleClick={handleEditPlayer} />
+          <InteractiveField players={players} onPlayerClick={handleEditPlayer} />
           <MatchNotes />
         </div>
         <div className="md:col-span-1 lg:col-span-1">

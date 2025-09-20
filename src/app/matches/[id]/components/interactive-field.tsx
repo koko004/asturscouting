@@ -30,7 +30,7 @@ const SoccerFieldSVG = () => (
         <rect x="138.5" y="0" width="403" height="165" stroke="white" strokeWidth="2" fill="none" />
         <rect x="248.5" y="0" width="183" height="55" stroke="white" strokeWidth="2" fill="none" />
         <circle cx="340" cy="115" r="3" fill="white" />
-        <path d="M 248.5 165 A 91.5 91.5 0 0 1 431.5 165" stroke="white" strokeWidth="2" fill="none" />
+        <path d="M 248.5 165 A 91.5 91.5 0 0 0 431.5 165" stroke="white" strokeWidth="2" fill="none" />
 
         {/* Bottom penalty area */}
         <rect x="138.5" y="885" width="403" height="165" stroke="white" strokeWidth="2" fill="none" />
@@ -42,16 +42,19 @@ const SoccerFieldSVG = () => (
 
 interface InteractiveFieldProps {
     players: Player[];
-    onPlayerDoubleClick: (player: Player) => void;
+    onPlayerClick: (player: Player) => void;
 }
 
-export default function InteractiveField({ players, onPlayerDoubleClick }: InteractiveFieldProps) {
+export default function InteractiveField({ players, onPlayerClick }: InteractiveFieldProps) {
   const [homeFormation, setHomeFormation] = useState<Formation>('4-4-2');
   const [awayFormation, setAwayFormation] = useState<Formation>('4-3-3');
   const fieldRef = useRef<HTMLDivElement>(null);
 
   const [elements, setElements] = useState<TacticalElement[]>([]);
   const [draggedElementId, setDraggedElementId] = useState<string | null>(null);
+  
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartRef = useRef({ x: 0, y: 0 });
 
   const { toast } = useToast();
   const [isSummarizing, setIsSummarizing] = useState(false);
@@ -62,7 +65,7 @@ export default function InteractiveField({ players, onPlayerDoubleClick }: Inter
     const homePlayers = getPlayerPositions(homeFormation, 'home');
     const awayPlayers = getPlayerPositions(awayFormation, 'away');
     
-    // Map tactical elements to actual players
+    // Map tactical elements to actual players (first 11 for home, next 11 for away)
     const homeElements = homePlayers.map((el, i) => ({ ...el, playerId: players[i]?.id }));
     const awayElements = awayPlayers.map((el, i) => ({ ...el, playerId: players[i + 11]?.id }));
 
@@ -93,44 +96,53 @@ export default function InteractiveField({ players, onPlayerDoubleClick }: Inter
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>, id: string) => {
     e.currentTarget.setPointerCapture(e.pointerId);
     setDraggedElementId(id);
+    setIsDragging(false);
+    dragStartRef.current = { x: e.clientX, y: e.clientY };
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!draggedElementId || !fieldRef.current) return;
 
-    const fieldRect = fieldRef.current.getBoundingClientRect();
-    const x = Math.max(0, Math.min(100, ((e.clientX - fieldRect.left) / fieldRect.width) * 100));
-    let y = Math.max(0, Math.min(100, ((e.clientY - fieldRect.top) / fieldRect.height) * 100));
-    
-    const isHomePlayer = draggedElementId.startsWith('H');
+    const dx = Math.abs(e.clientX - dragStartRef.current.x);
+    const dy = Math.abs(e.clientY - dragStartRef.current.y);
 
-    if (isHomePlayer) {
-        y = Math.max(50, y);
-    } else {
-        y = Math.min(50, y);
+    if (!isDragging && (dx > 5 || dy > 5)) {
+      setIsDragging(true);
     }
+    
+    if (isDragging) {
+      const fieldRect = fieldRef.current.getBoundingClientRect();
+      const x = Math.max(0, Math.min(100, ((e.clientX - fieldRect.left) / fieldRect.width) * 100));
+      let y = Math.max(0, Math.min(100, ((e.clientY - fieldRect.top) / fieldRect.height) * 100));
+      
+      const isHomePlayer = draggedElementId.startsWith('H');
 
+      if (isHomePlayer) {
+          y = Math.max(50, y);
+      } else {
+          y = Math.min(50, y);
+      }
 
-    setElements((prev) =>
-      prev.map((el) => (el.id === draggedElementId ? { ...el, position: { x, y } } : el))
-    );
+      setElements((prev) =>
+        prev.map((el) => (el.id === draggedElementId ? { ...el, position: { x, y } } : el))
+      );
+    }
   };
 
-  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>, playerId?: string) => {
     if(draggedElementId){
       e.currentTarget.releasePointerCapture(e.pointerId);
       setDraggedElementId(null);
     }
-  };
 
-  const handleDoubleClick = (playerId?: string) => {
-    if (!playerId) return;
-    const player = players.find(p => p.id === playerId);
-    if (player) {
-      onPlayerDoubleClick(player);
+    if (!isDragging && playerId) {
+        const player = players.find(p => p.id === playerId);
+        if (player) {
+            onPlayerClick(player);
+        }
     }
-  }
-
+    setIsDragging(false);
+  };
 
   return (
     <Card className="h-full flex flex-col">
@@ -169,8 +181,6 @@ export default function InteractiveField({ players, onPlayerDoubleClick }: Inter
         <div
             ref={fieldRef}
             onPointerMove={handlePointerMove}
-            onPointerUp={handlePointerUp}
-            onPointerLeave={handlePointerUp}
             className="relative w-full max-w-lg touch-none select-none overflow-hidden rounded-lg aspect-[680/1050]"
         >
             <div className="absolute inset-0">
@@ -180,7 +190,14 @@ export default function InteractiveField({ players, onPlayerDoubleClick }: Inter
             <div
                 key={el.id}
                 onPointerDown={(e) => handlePointerDown(e, el.id)}
-                onDoubleClick={() => handleDoubleClick(el.playerId)}
+                onPointerUp={(e) => handlePointerUp(e, el.playerId)}
+                onPointerLeave={(e) => { 
+                    if (draggedElementId) {
+                        e.currentTarget.releasePointerCapture(e.pointerId);
+                        setDraggedElementId(null);
+                        setIsDragging(false);
+                    }
+                }}
                 className="absolute flex h-7 w-7 -translate-x-1/2 -translate-y-1/2 cursor-grab items-center justify-center rounded-full border-2 text-white shadow-lg active:cursor-grabbing"
                 style={{
                 left: `${el.position.x}%`,
