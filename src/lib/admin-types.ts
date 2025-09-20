@@ -17,6 +17,7 @@ export type Match = {
     awayTeam: Team;
     date: string;
     competition: string;
+    stadium: string;
     isClosed: boolean;
     assignedScoutId?: string;
 };

@@ -1,12 +1,19 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { matches } from '@/lib/data';
+import { matches, users } from '@/lib/admin-data';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Lock, Unlock } from 'lucide-react';
+import { ArrowRight, Lock, Unlock, User, MapPin } from 'lucide-react';
 import PageHeader from '@/components/page-header';
 
 export default function MatchesPage() {
+
+  const getScoutName = (scoutId: string | undefined) => {
+    if (!scoutId) return 'Sin asignar';
+    const scout = users.find(u => u.id === scoutId);
+    return scout ? scout.name : 'Desconocido';
+  }
+
   return (
     <div className="flex flex-col gap-8">
       <PageHeader
@@ -51,7 +58,17 @@ export default function MatchesPage() {
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="flex flex-1 flex-col justify-end">
+            <CardContent className="flex flex-1 flex-col justify-end gap-4">
+               <div className="space-y-2 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  <span>{getScoutName(match.assignedScoutId)}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4" />
+                  <span>{match.stadium}</span>
+                </div>
+              </div>
               <div className="flex items-center justify-between text-sm text-muted-foreground">
                 <span>{new Date(match.date).toLocaleString('es-ES', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span>
                 <Button asChild variant="ghost" size="sm">

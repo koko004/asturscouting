@@ -31,6 +31,7 @@ export const matches: Match[] = [
     awayTeam: { name: 'Real Oviedo', logoUrl: 'https://picsum.photos/seed/2/100/100' },
     date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
     competition: 'Segunda División',
+    stadium: 'El Molinón',
     isClosed: false,
     assignedScoutId: 'u2',
   },
@@ -40,6 +41,7 @@ export const matches: Match[] = [
     awayTeam: { name: 'Marino de Luanco', logoUrl: 'https://picsum.photos/seed/4/100/100' },
     date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
     competition: 'Segunda B',
+    stadium: 'Estadio Ganzábal',
     isClosed: true,
     assignedScoutId: 'u3',
   },
@@ -49,6 +51,7 @@ export const matches: Match[] = [
     awayTeam: { name: 'CD Covadonga', logoUrl: 'https://picsum.photos/seed/6/100/100' },
     date: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toISOString(),
     competition: 'Tercera División',
+    stadium: 'Hermanos Antuña',
     isClosed: false,
   },
 ];

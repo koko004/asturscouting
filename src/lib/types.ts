@@ -4,7 +4,9 @@ export type Match = {
   awayTeam: { name: string; logoUrl: string };
   date: string;
   competition: string;
+  stadium: string;
   isClosed: boolean;
+  assignedScoutId?: string;
 };
 
 export const playerPositions = ['Portero (POR)', 'Defensa (DEF)', 'Centrocampista (CEN)', 'Delantero (DEL)'] as const;
