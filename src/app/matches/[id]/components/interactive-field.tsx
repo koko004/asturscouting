@@ -20,18 +20,22 @@ import {
 import { Label } from '@/components/ui/label';
 
 const SoccerFieldSVG = () => (
-    <svg width="100%" height="100%" viewBox="0 0 680 1050" className="bg-green-600">
+    <svg width="100%" height="100%" viewBox="0 0 680 1050" preserveAspectRatio="none">
         <rect x="0" y="0" width="680" height="1050" stroke="white" strokeWidth="2" fill="#53A053" />
         <line x1="0" y1="525" x2="680" y2="525" stroke="white" strokeWidth="2" />
         <circle cx="340" cy="525" r="91.5" stroke="white" strokeWidth="2" fill="none" />
         <circle cx="340" cy="525" r="3" fill="white" />
-        <rect x="0" y="0" width="680" height="165" stroke="white" strokeWidth="2" fill="none" />
-        <rect x="138.5" y="0" width="403" height="55" stroke="white" strokeWidth="2" fill="none" />
-        <circle cx="340" cy="115" r="9.15" stroke="white" strokeWidth="2" fill="none" />
+        
+        {/* Top penalty area */}
+        <rect x="138.5" y="0" width="403" height="165" stroke="white" strokeWidth="2" fill="none" />
+        <rect x="248.5" y="0" width="183" height="55" stroke="white" strokeWidth="2" fill="none" />
+        <circle cx="340" cy="115" r="3" fill="white" />
         <path d="M 248.5 165 A 91.5 91.5 0 0 1 431.5 165" stroke="white" strokeWidth="2" fill="none" />
-        <rect x="0" y="885" width="680" height="165" stroke="white" strokeWidth="2" fill="none" />
-        <rect x="138.5" y="995" width="403" height="55" stroke="white" strokeWidth="2" fill="none" />
-        <circle cx="340" cy="935" r="9.15" stroke="white" strokeWidth="2" fill="none" />
+
+        {/* Bottom penalty area */}
+        <rect x="138.5" y="885" width="403" height="165" stroke="white" strokeWidth="2" fill="none" />
+        <rect x="248.5" y="995" width="183" height="55" stroke="white" strokeWidth="2" fill="none" />
+        <circle cx="340" cy="935" r="3" fill="white" />
         <path d="M 248.5 885 A 91.5 91.5 0 0 0 431.5 885" stroke="white" strokeWidth="2" fill="none" />
     </svg>
 );
@@ -91,9 +95,9 @@ export default function InteractiveField() {
 
     const isHomePlayer = draggedElementId.startsWith('H');
     if (isHomePlayer) {
-        y = Math.max(50, Math.min(100, y)); // Keep in bottom half
+        y = Math.max(50, y);
     } else {
-        y = Math.min(50, Math.max(0, y)); // Keep in top half
+        y = Math.min(50, y);
     }
 
     setElements((prev) =>
