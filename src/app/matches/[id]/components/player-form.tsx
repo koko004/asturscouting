@@ -63,8 +63,8 @@ export default function PlayerForm({
       ? { ...player, rating: player.rating || 5 }
       : {
           name: '',
-          jerseyNumber: undefined,
-          age: undefined,
+          jerseyNumber: '' as unknown as number, // Prevent uncontrolled to controlled error
+          age: '' as unknown as number, // Prevent uncontrolled to controlled error
           position: 'Midfielder (MID)',
           rating: 5,
           notes: '',
@@ -79,6 +79,25 @@ export default function PlayerForm({
     onOpenChange(false);
     form.reset();
   };
+  
+  // We need to re-initialize the form when the player prop changes.
+  React.useEffect(() => {
+    if (isOpen) {
+      form.reset(
+        player
+          ? { ...player, rating: player.rating || 5 }
+          : {
+              name: '',
+              jerseyNumber: '' as unknown as number,
+              age: '' as unknown as number,
+              position: 'Midfielder (MID)',
+              rating: 5,
+              notes: '',
+            }
+      );
+    }
+  }, [isOpen, player, form]);
+
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -178,7 +197,7 @@ export default function PlayerForm({
                 <FormItem>
                   <FormLabel>Player Notes</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Strengths, weaknesses, etc." {...field} />
+                    <Textarea placeholder="Strengths, weaknesses, etc." {...field} value={field.value ?? ''} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
