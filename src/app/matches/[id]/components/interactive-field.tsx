@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Wand2 } from 'lucide-react';
@@ -42,18 +42,24 @@ export default function InteractiveField() {
   const [awayFormation, setAwayFormation] = useState<Formation>('4-3-3');
   const fieldRef = useRef<HTMLDivElement>(null);
 
+  const [elements, setElements] = useState<TacticalElement[]>([]);
+  const [draggedElementId, setDraggedElementId] = useState<string | null>(null);
+
   const { toast } = useToast();
   const [isSummarizing, setIsSummarizing] = useState(false);
   const [summary, setSummary] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const homePlayers = getPlayerPositions(homeFormation, 'home');
-  const awayPlayers = getPlayerPositions(awayFormation, 'away');
-  const elements: TacticalElement[] = [...homePlayers, ...awayPlayers];
+  useEffect(() => {
+    const homePlayers = getPlayerPositions(homeFormation, 'home');
+    const awayPlayers = getPlayerPositions(awayFormation, 'away');
+    setElements([...homePlayers, ...awayPlayers]);
+  }, [homeFormation, awayFormation]);
   
   const handleSummarize = async () => {
     setIsSummarizing(true);
-    const positioningDescription = `Home team is playing ${homeFormation}. Away team is playing ${awayFormation}.`;
+    
+    const positioningDescription = `Home team is playing ${homeFormation}. Away team is playing ${awayFormation}. Player positions: ${JSON.stringify(elements.map(e => ({id: e.id, pos: e.position})))}`;
       
     try {
       const result = await summarizeTacticalPositioning({ positioningDescription });
@@ -69,6 +75,28 @@ export default function InteractiveField() {
     } finally {
       setIsSummarizing(false);
     }
+  };
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>, id: string) => {
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setDraggedElementId(id);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!draggedElementId || !fieldRef.current) return;
+
+    const fieldRect = fieldRef.current.getBoundingClientRect();
+    const x = Math.max(0, Math.min(100, ((e.clientX - fieldRect.left) / fieldRect.width) * 100));
+    const y = Math.max(0, Math.min(100, ((e.clientY - fieldRect.top) / fieldRect.height) * 100));
+
+    setElements((prev) =>
+      prev.map((el) => (el.id === draggedElementId ? { ...el, position: { x, y } } : el))
+    );
+  };
+
+  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.currentTarget.releasePointerCapture(e.pointerId);
+    setDraggedElementId(null);
   };
 
 
@@ -107,7 +135,10 @@ export default function InteractiveField() {
       </CardHeader>
       <CardContent
         ref={fieldRef}
-        className="relative aspect-[680/1050] w-full max-w-lg mx-auto select-none touch-none overflow-hidden rounded-lg"
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerLeave={handlePointerUp}
+        className="relative mx-auto aspect-[680/1050] w-full max-w-lg touch-none select-none overflow-hidden rounded-lg"
       >
         <div className="absolute inset-0">
           <SoccerFieldSVG />
@@ -115,12 +146,14 @@ export default function InteractiveField() {
         {elements.map((el) => (
           <div
             key={el.id}
-            className="absolute flex h-7 w-7 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 text-white shadow-lg"
+            onPointerDown={(e) => handlePointerDown(e, el.id)}
+            className="absolute flex h-7 w-7 -translate-x-1/2 -translate-y-1/2 cursor-grab items-center justify-center rounded-full border-2 text-white shadow-lg active:cursor-grabbing"
             style={{
               left: `${el.position.x}%`,
               top: `${el.position.y}%`,
               backgroundColor: el.color,
               borderColor: 'rgba(255, 255, 255, 0.7)',
+              touchAction: 'none',
             }}
           >
              <span className="text-[10px] font-bold">{el.label}</span>
