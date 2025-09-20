@@ -118,8 +118,11 @@ export default function MyReportsTable({ reports, matches }: MyReportsTableProps
                     <DialogHeader>
                       <DialogTitle>Notas de: {report.playerName}</DialogTitle>
                       <DialogDescription>
-                        Posición: {report.position} <br />
-                        Partido: {getMatchDescription(report.matchId)}
+                        <div>
+                            <span>Posición: {report.position}</span>
+                            <br />
+                            <span>Partido: {getMatchDescription(report.matchId)}</span>
+                        </div>
                       </DialogDescription>
                     </DialogHeader>
                     <div className="mt-4 rounded-md border bg-muted p-4">
