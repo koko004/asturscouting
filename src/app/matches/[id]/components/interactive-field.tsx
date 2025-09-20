@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Wand2 } from 'lucide-react';
-import type { TacticalElement, Formation } from '@/lib/types';
+import type { TacticalElement, Formation, Player } from '@/lib/types';
 import { formations } from '@/lib/types';
 import { getPlayerPositions } from '@/lib/formations';
 import { summarizeTacticalPositioning } from '@/ai/flows/summarize-tactical-positioning';
@@ -30,7 +30,7 @@ const SoccerFieldSVG = () => (
         <rect x="138.5" y="0" width="403" height="165" stroke="white" strokeWidth="2" fill="none" />
         <rect x="248.5" y="0" width="183" height="55" stroke="white" strokeWidth="2" fill="none" />
         <circle cx="340" cy="115" r="3" fill="white" />
-        <path d="M 248.5 165 A 91.5 91.5 0 0 0 431.5 165" stroke="white" strokeWidth="2" fill="none" />
+        <path d="M 248.5 165 A 91.5 91.5 0 0 1 431.5 165" stroke="white" strokeWidth="2" fill="none" />
 
         {/* Bottom penalty area */}
         <rect x="138.5" y="885" width="403" height="165" stroke="white" strokeWidth="2" fill="none" />
@@ -40,8 +40,12 @@ const SoccerFieldSVG = () => (
     </svg>
 );
 
+interface InteractiveFieldProps {
+    players: Player[];
+    onPlayerDoubleClick: (player: Player) => void;
+}
 
-export default function InteractiveField() {
+export default function InteractiveField({ players, onPlayerDoubleClick }: InteractiveFieldProps) {
   const [homeFormation, setHomeFormation] = useState<Formation>('4-4-2');
   const [awayFormation, setAwayFormation] = useState<Formation>('4-3-3');
   const fieldRef = useRef<HTMLDivElement>(null);
@@ -57,8 +61,13 @@ export default function InteractiveField() {
   useEffect(() => {
     const homePlayers = getPlayerPositions(homeFormation, 'home');
     const awayPlayers = getPlayerPositions(awayFormation, 'away');
-    setElements([...homePlayers, ...awayPlayers]);
-  }, [homeFormation, awayFormation]);
+    
+    // Map tactical elements to actual players
+    const homeElements = homePlayers.map((el, i) => ({ ...el, playerId: players[i]?.id }));
+    const awayElements = awayPlayers.map((el, i) => ({ ...el, playerId: players[i + 11]?.id }));
+
+    setElements([...homeElements, ...awayElements]);
+  }, [homeFormation, awayFormation, players]);
   
   const handleSummarize = async () => {
     setIsSummarizing(true);
@@ -114,6 +123,14 @@ export default function InteractiveField() {
     }
   };
 
+  const handleDoubleClick = (playerId?: string) => {
+    if (!playerId) return;
+    const player = players.find(p => p.id === playerId);
+    if (player) {
+      onPlayerDoubleClick(player);
+    }
+  }
+
 
   return (
     <Card className="h-full flex flex-col">
@@ -163,6 +180,7 @@ export default function InteractiveField() {
             <div
                 key={el.id}
                 onPointerDown={(e) => handlePointerDown(e, el.id)}
+                onDoubleClick={() => handleDoubleClick(el.playerId)}
                 className="absolute flex h-7 w-7 -translate-x-1/2 -translate-y-1/2 cursor-grab items-center justify-center rounded-full border-2 text-white shadow-lg active:cursor-grabbing"
                 style={{
                 left: `${el.position.x}%`,

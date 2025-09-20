@@ -1,12 +1,10 @@
 'use client';
 
-import { useState } from 'react';
 import type { Player } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import PlayerForm from './player-form';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,33 +21,14 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 interface PlayerListProps {
   players: Player[];
   onPlayerUpdate: (players: Player[]) => void;
+  onEditPlayer: (player: Player) => void;
+  onAddNewPlayer: () => void;
 }
 
-export default function PlayerList({ players, onPlayerUpdate }: PlayerListProps) {
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
-
-  const handleAddNew = () => {
-    setSelectedPlayer(null);
-    setIsFormOpen(true);
-  };
-
-  const handleEdit = (player: Player) => {
-    setSelectedPlayer(player);
-    setIsFormOpen(true);
-  };
-
+export default function PlayerList({ players, onPlayerUpdate, onEditPlayer, onAddNewPlayer }: PlayerListProps) {
+  
   const handleDelete = (playerId: string) => {
     onPlayerUpdate(players.filter((p) => p.id !== playerId));
-  };
-
-  const handleSave = (player: Player) => {
-    const playerExists = players.some((p) => p.id === player.id);
-    if (playerExists) {
-      onPlayerUpdate(players.map((p) => (p.id === player.id ? player : p)));
-    } else {
-      onPlayerUpdate([...players, player]);
-    }
   };
 
   return (
@@ -57,7 +36,7 @@ export default function PlayerList({ players, onPlayerUpdate }: PlayerListProps)
       <Card className="h-full">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Player Evaluation</CardTitle>
-          <Button size="sm" onClick={handleAddNew}>
+          <Button size="sm" onClick={onAddNewPlayer}>
             <Plus className="mr-2 h-4 w-4" /> Add Player
           </Button>
         </CardHeader>
@@ -76,7 +55,7 @@ export default function PlayerList({ players, onPlayerUpdate }: PlayerListProps)
                       </div>
                     </div>
                     <div className="flex gap-1">
-                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEdit(player)}>
+                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onEditPlayer(player)}>
                         <Edit className="h-4 w-4" />
                       </Button>
                       <AlertDialog>
@@ -113,13 +92,6 @@ export default function PlayerList({ players, onPlayerUpdate }: PlayerListProps)
           </ScrollArea>
         </CardContent>
       </Card>
-
-      <PlayerForm
-        isOpen={isFormOpen}
-        onOpenChange={setIsFormOpen}
-        player={selectedPlayer}
-        onSave={handleSave}
-      />
     </>
   );
 }

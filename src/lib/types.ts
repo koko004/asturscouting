@@ -25,6 +25,7 @@ export type TacticalElement = {
   position: { x: number; y: number };
   type: 'player' | 'cone' | 'ball';
   color: string;
+  playerId?: string;
 };
 
 export const formations = ['4-4-2', '4-3-3', '3-5-2', '4-5-1', '5-3-2'] as const;
