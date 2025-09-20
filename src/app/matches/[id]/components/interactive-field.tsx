@@ -27,11 +27,11 @@ const SoccerFieldSVG = () => (
         <circle cx="340" cy="525" r="3" fill="white" />
         <rect x="0" y="0" width="680" height="165" stroke="white" strokeWidth="2" fill="none" />
         <rect x="138.5" y="0" width="403" height="55" stroke="white" strokeWidth="2" fill="none" />
-        <circle cx="340" cy="110" r="3" fill="white" />
+        <circle cx="340" cy="115" r="9.15" stroke="white" strokeWidth="2" fill="none" />
         <path d="M 248.5 165 A 91.5 91.5 0 0 1 431.5 165" stroke="white" strokeWidth="2" fill="none" />
         <rect x="0" y="885" width="680" height="165" stroke="white" strokeWidth="2" fill="none" />
         <rect x="138.5" y="995" width="403" height="55" stroke="white" strokeWidth="2" fill="none" />
-        <circle cx="340" cy="940" r="3" fill="white" />
+        <circle cx="340" cy="935" r="9.15" stroke="white" strokeWidth="2" fill="none" />
         <path d="M 248.5 885 A 91.5 91.5 0 0 0 431.5 885" stroke="white" strokeWidth="2" fill="none" />
     </svg>
 );
@@ -91,9 +91,9 @@ export default function InteractiveField() {
 
     const isHomePlayer = draggedElementId.startsWith('H');
     if (isHomePlayer) {
-        y = Math.max(50, y); // Keep in bottom half
+        y = Math.max(50, Math.min(100, y)); // Keep in bottom half
     } else {
-        y = Math.min(50, y); // Keep in top half
+        y = Math.min(50, Math.max(0, y)); // Keep in top half
     }
 
     setElements((prev) =>
