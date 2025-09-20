@@ -26,3 +26,6 @@ export type TacticalElement = {
   type: 'player' | 'cone' | 'ball';
   color: string;
 };
+
+export const formations = ['4-4-2', '4-3-3', '3-5-2', '4-5-1', '5-3-2'] as const;
+export type Formation = (typeof formations)[number];

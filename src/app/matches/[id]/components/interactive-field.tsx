@@ -1,28 +1,22 @@
 'use client';
 
-import { useState, useRef, MouseEvent } from 'react';
+import { useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Wand2, Plus, Trash2, Milestone } from 'lucide-react';
-import type { TacticalElement } from '@/lib/types';
-import { cn } from '@/lib/utils';
+import { Wand2 } from 'lucide-react';
+import type { TacticalElement, Formation } from '@/lib/types';
+import { formations, getPlayerPositions } from '@/lib/formations';
 import { summarizeTacticalPositioning } from '@/ai/flows/summarize-tactical-positioning';
 import SummaryModal from './summary-modal';
 import { useToast } from '@/hooks/use-toast';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-
-const initialElements: TacticalElement[] = [
-  { id: 'p1', label: 'P1', position: { x: 50, y: 85 }, type: 'player', color: 'hsl(210, 80%, 55%)' },
-  { id: 'p2', label: 'P2', position: { x: 25, y: 65 }, type: 'player', color: 'hsl(210, 80%, 55%)' },
-  { id: 'p3', label: 'P3', position: { x: 75, y: 65 }, type: 'player', color: 'hsl(210, 80%, 55%)' },
-  { id: 'p4', label: 'P4', position: { x: 50, y: 45 }, type: 'player', color: 'hsl(210, 80%, 55%)' },
-  { id: 'o1', label: 'O1', position: { x: 50, y: 15 }, type: 'player', color: 'hsl(0, 80%, 55%)' },
-];
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 
 const SoccerFieldSVG = () => (
     <svg width="100%" height="100%" viewBox="0 0 680 1050" className="bg-green-600">
@@ -43,8 +37,8 @@ const SoccerFieldSVG = () => (
 
 
 export default function InteractiveField() {
-  const [elements, setElements] = useState<TacticalElement[]>(initialElements);
-  const [draggingElement, setDraggingElement] = useState<string | null>(null);
+  const [homeFormation, setHomeFormation] = useState<Formation>('4-4-2');
+  const [awayFormation, setAwayFormation] = useState<Formation>('4-3-3');
   const fieldRef = useRef<HTMLDivElement>(null);
 
   const { toast } = useToast();
@@ -52,47 +46,13 @@ export default function InteractiveField() {
   const [summary, setSummary] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const getPositionFromEvent = (e: MouseEvent) => {
-    if (!fieldRef.current) return { x: 0, y: 0 };
-    const rect = fieldRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    return { x, y };
-  };
-
-  const handleMouseDown = (e: MouseEvent, id: string) => {
-    setDraggingElement(id);
-  };
-
-  const handleMouseMove = (e: MouseEvent) => {
-    if (!draggingElement) return;
-    const { x, y } = getPositionFromEvent(e);
-    setElements((prev) =>
-      prev.map((el) => (el.id === draggingElement ? { ...el, position: { x, y } } : el))
-    );
-  };
-
-  const handleMouseUp = () => {
-    setDraggingElement(null);
-  };
-
-  const addElement = (type: 'player' | 'cone' | 'ball') => {
-    const newId = `${type.charAt(0)}${elements.length + 1}`;
-    const newElement: TacticalElement = {
-      id: newId,
-      label: newId.toUpperCase(),
-      position: { x: 50, y: 50 },
-      type,
-      color: type === 'player' ? 'hsl(340, 80%, 55%)' : type === 'cone' ? 'hsl(45, 100%, 50%)' : 'white',
-    };
-    setElements([...elements, newElement]);
-  };
+  const homePlayers = getPlayerPositions(homeFormation, 'home');
+  const awayPlayers = getPlayerPositions(awayFormation, 'away');
+  const elements: TacticalElement[] = [...homePlayers, ...awayPlayers];
   
   const handleSummarize = async () => {
     setIsSummarizing(true);
-    const positioningDescription = elements
-      .map(el => `${el.label} (${el.type}) is at position (${Math.round(el.position.x)}, ${Math.round(el.position.y)})`)
-      .join('; ');
+    const positioningDescription = `Home team is playing ${homeFormation}. Away team is playing ${awayFormation}.`;
       
     try {
       const result = await summarizeTacticalPositioning({ positioningDescription });
@@ -115,38 +75,38 @@ export default function InteractiveField() {
     <Card className="h-full">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Interactive Field</CardTitle>
-        <div className="flex items-center gap-2">
-           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button size="sm" variant="outline"><Plus className="mr-2 h-4 w-4" /> Add Element</Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => addElement('player')}>
-                <Plus className="mr-2 h-4 w-4" /> Player
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => addElement('ball')}>
-                <Milestone className="mr-2 h-4 w-4" /> Ball
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => addElement('cone')}>
-                <Trash2 className="mr-2 h-4 w-4" /> Cone
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Label htmlFor="home-formation">Home Team</Label>
+            <Select onValueChange={(value: Formation) => setHomeFormation(value)} defaultValue={homeFormation}>
+              <SelectTrigger id="home-formation" className="w-[120px]">
+                <SelectValue placeholder="Formation" />
+              </SelectTrigger>
+              <SelectContent>
+                {formations.map(f => <SelectItem key={f} value={f}>{f}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center gap-2">
+            <Label htmlFor="away-formation">Away Team</Label>
+            <Select onValueChange={(value: Formation) => setAwayFormation(value)} defaultValue={awayFormation}>
+              <SelectTrigger id="away-formation" className="w-[120px]">
+                <SelectValue placeholder="Formation" />
+              </SelectTrigger>
+              <SelectContent>
+                {formations.map(f => <SelectItem key={f} value={f}>{f}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
 
           <Button size="sm" onClick={handleSummarize} disabled={isSummarizing}>
             <Wand2 className="mr-2 h-4 w-4" /> {isSummarizing ? 'Summarizing...' : 'Summarize Positioning'}
-          </Button>
-          <Button size="sm" variant="destructive" onClick={() => setElements([])}>
-            <Trash2 className="mr-2 h-4 w-4" /> Clear
           </Button>
         </div>
       </CardHeader>
       <CardContent
         ref={fieldRef}
         className="relative h-[500px] select-none touch-none overflow-hidden rounded-lg"
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
       >
         <div className="absolute inset-0">
           <SoccerFieldSVG />
@@ -154,19 +114,15 @@ export default function InteractiveField() {
         {elements.map((el) => (
           <div
             key={el.id}
-            className={cn(
-              "absolute flex h-8 w-8 -translate-x-1/2 -translate-y-1/2 cursor-grab items-center justify-center rounded-full border-2 text-white shadow-lg",
-              { 'cursor-grabbing': draggingElement === el.id }
-            )}
+            className="absolute flex h-7 w-7 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 text-white shadow-lg"
             style={{
               left: `${el.position.x}%`,
               top: `${el.position.y}%`,
               backgroundColor: el.color,
               borderColor: 'rgba(255, 255, 255, 0.7)',
             }}
-            onMouseDown={(e) => handleMouseDown(e, el.id)}
           >
-             <span className="text-xs font-bold">{el.label}</span>
+             <span className="text-[10px] font-bold">{el.label}</span>
           </div>
         ))}
       </CardContent>
