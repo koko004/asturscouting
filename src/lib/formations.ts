@@ -9,9 +9,9 @@ const formationPositions: Record<Formation, { x: number; y: number }[]> = {
     // Goalkeeper
     { x: 50, y: 95 },
     // Defenders
-    { x: 20, y: 80 }, { x: 40, y: 82 }, { x: 60, y: 82 }, { x: 80, y: 80 },
+    { x: 15, y: 85 }, { x: 35, y: 88 }, { x: 65, y: 88 }, { x: 85, y: 85 },
     // Midfielders
-    { x: 20, y: 60 }, { x: 40, y: 62 }, { x: 60, y: 62 }, { x: 80, y: 60 },
+    { x: 15, y: 65 }, { x: 35, y: 68 }, { x: 65, y: 68 }, { x: 85, y: 65 },
     // Forwards
     { x: 40, y: 55 }, { x: 60, y: 55 },
   ],
@@ -19,19 +19,19 @@ const formationPositions: Record<Formation, { x: number; y: number }[]> = {
     // Goalkeeper
     { x: 50, y: 95 },
     // Defenders
-    { x: 20, y: 80 }, { x: 40, y: 82 }, { x: 60, y: 82 }, { x: 80, y: 80 },
+    { x: 15, y: 85 }, { x: 35, y: 88 }, { x: 65, y: 88 }, { x: 85, y: 85 },
     // Midfielders
-    { x: 30, y: 60 }, { x: 50, y: 65 }, { x: 70, y: 60 },
+    { x: 25, y: 70 }, { x: 50, y: 72 }, { x: 75, y: 70 },
     // Forwards
-    { x: 25, y: 55 }, { x: 50, y: 50 }, { x: 75, y: 55 },
+    { x: 20, y: 55 }, { x: 50, y: 52 }, { x: 80, y: 55 },
   ],
   '3-5-2': [
     // Goalkeeper
     { x: 50, y: 95 },
     // Defenders
-    { x: 30, y: 82 }, { x: 50, y: 85 }, { x: 70, y: 82 },
+    { x: 25, y: 88 }, { x: 50, y: 90 }, { x: 75, y: 88 },
     // Midfielders
-    { x: 15, y: 60 }, { x: 35, y: 65 }, { x: 50, y: 60 }, { x: 65, y: 65 }, { x: 85, y: 60 },
+    { x: 10, y: 65 }, { x: 30, y: 70 }, { x: 50, y: 68 }, { x: 70, y: 70 }, { x: 90, y: 65 },
     // Forwards
     { x: 40, y: 55 }, { x: 60, y: 55 },
   ],
@@ -39,9 +39,9 @@ const formationPositions: Record<Formation, { x: number; y: number }[]> = {
     // Goalkeeper
     { x: 50, y: 95 },
     // Defenders
-    { x: 20, y: 80 }, { x: 40, y: 82 }, { x: 60, y: 82 }, { x: 80, y: 80 },
+    { x: 15, y: 85 }, { x: 35, y: 88 }, { x: 65, y: 88 }, { x: 85, y: 85 },
     // Midfielders
-    { x: 15, y: 60 }, { x: 35, y: 65 }, { x: 50, y: 60 }, { x: 65, y: 65 }, { x: 85, y: 60 },
+    { x: 10, y: 65 }, { x: 30, y: 70 }, { x: 50, y: 68 }, { x: 70, y: 70 }, { x: 90, y: 65 },
     // Forward
     { x: 50, y: 55 },
   ],
@@ -49,9 +49,9 @@ const formationPositions: Record<Formation, { x: number; y: number }[]> = {
       // Goalkeeper
       { x: 50, y: 95 },
       // Defenders
-      { x: 15, y: 80 }, { x: 35, y: 82 }, { x: 50, y: 85 }, { x: 65, y: 82 }, { x: 85, y: 80 },
+      { x: 10, y: 85 }, { x: 30, y: 88 }, { x: 50, y: 90 }, { x: 70, y: 88 }, { x: 90, y: 85 },
       // Midfielders
-      { x: 30, y: 60 }, { x: 50, y: 65 }, { x: 70, y: 60 },
+      { x: 25, y: 70 }, { x: 50, y: 72 }, { x: 75, y: 70 },
       // Forwards
       { x: 40, y: 55 }, { x: 60, y: 55 },
   ]
