@@ -3,12 +3,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Wand2 } from 'lucide-react';
+import { Save } from 'lucide-react';
 import type { TacticalElement, Formation } from '@/lib/types';
 import { formations } from '@/lib/types';
 import { getPlayerPositions } from '@/lib/formations';
-import { summarizeTacticalPositioning } from '@/ai/flows/summarize-tactical-positioning';
-import SummaryModal from './summary-modal';
 import { useToast } from '@/hooks/use-toast';
 import {
   Select,
@@ -30,13 +28,13 @@ const SoccerFieldSVG = () => (
         <rect x="138.5" y="0" width="403" height="165" stroke="white" strokeWidth="2" fill="none" />
         <rect x="248.5" y="0" width="183" height="55" stroke="white" strokeWidth="2" fill="none" />
         <circle cx="340" cy="115" r="3" fill="white" />
-        <path d="M 248.5 165 A 91.5 91.5 0 0 1 431.5 165" stroke="white" strokeWidth="2" fill="none" />
+        <path d="M 248.5 165 A 91.5 91.5 0 0 0 431.5 165" stroke="white" strokeWidth="2" fill="none" />
 
         {/* Bottom penalty area */}
         <rect x="138.5" y="885" width="403" height="165" stroke="white" strokeWidth="2" fill="none" />
         <rect x="248.5" y="995" width="183" height="55" stroke="white" strokeWidth="2" fill="none" />
         <circle cx="340" cy="935" r="3" fill="white" />
-        <path d="M 248.5 885 A 91.5 91.5 0 0 0 431.5 885" stroke="white" strokeWidth="2" fill="none" />
+        <path d="M 248.5 885 A 91.5 91.5 0 0 1 431.5 885" stroke="white" strokeWidth="2" fill="none" />
     </svg>
 );
 
@@ -56,9 +54,7 @@ export default function InteractiveField({ onPlayerClick }: InteractiveFieldProp
   const dragStartRef = useRef({ x: 0, y: 0 });
 
   const { toast } = useToast();
-  const [isSummarizing, setIsSummarizing] = useState(false);
-  const [summary, setSummary] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     const homePlayers = getPlayerPositions(homeFormation, 'home');
@@ -66,25 +62,17 @@ export default function InteractiveField({ onPlayerClick }: InteractiveFieldProp
     setElements([...homePlayers, ...awayPlayers]);
   }, [homeFormation, awayFormation]);
   
-  const handleSummarize = async () => {
-    setIsSummarizing(true);
-    
-    const positioningDescription = `Home team is playing ${homeFormation}. Away team is playing ${awayFormation}. Player positions: ${JSON.stringify(elements.map(e => ({id: e.id, pos: e.position})))}`;
-      
-    try {
-      const result = await summarizeTacticalPositioning({ positioningDescription });
-      setSummary(result.summary);
-      setIsModalOpen(true);
-    } catch (error) {
-      console.error('Error summarizing positioning:', error);
+  const handleSave = () => {
+    setIsSaving(true);
+    // Here you would typically save the 'elements' state to your backend
+    console.log('Saving player positions:', elements.map(e => ({id: e.id, pos: e.position})));
+    setTimeout(() => {
       toast({
-        variant: 'destructive',
-        title: 'Summarization Failed',
-        description: 'Could not generate a summary. Please try again.',
+        title: 'Positions Saved',
+        description: 'The current player positions have been saved.',
       });
-    } finally {
-      setIsSummarizing(false);
-    }
+      setIsSaving(false);
+    }, 1000);
   };
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>, id: string) => {
@@ -106,7 +94,7 @@ export default function InteractiveField({ onPlayerClick }: InteractiveFieldProp
     
     if (isDragging) {
       const fieldRect = fieldRef.current.getBoundingClientRect();
-      const x = Math.max(0, Math.min(100, ((e.clientX - fieldRect.left) / fieldRect.width) * 100));
+      let x = Math.max(0, Math.min(100, ((e.clientX - fieldRect.left) / fieldRect.width) * 100));
       let y = Math.max(0, Math.min(100, ((e.clientY - fieldRect.top) / fieldRect.height) * 100));
       
       const isHomePlayer = draggedElementId.startsWith('H');
@@ -167,8 +155,8 @@ export default function InteractiveField({ onPlayerClick }: InteractiveFieldProp
             </Select>
           </div>
 
-          <Button size="sm" onClick={handleSummarize} disabled={isSummarizing}>
-            <Wand2 className="mr-2 h-4 w-4" /> {isSummarizing ? 'Summarizing...' : 'Summarize Positioning'}
+          <Button size="sm" onClick={handleSave} disabled={isSaving}>
+            <Save className="mr-2 h-4 w-4" /> {isSaving ? 'Saving...' : 'Save Positions'}
           </Button>
         </div>
       </CardHeader>
@@ -207,7 +195,6 @@ export default function InteractiveField({ onPlayerClick }: InteractiveFieldProp
             ))}
         </div>
       </CardContent>
-      <SummaryModal isOpen={isModalOpen} setIsOpen={setIsModalOpen} summary={summary} />
     </Card>
   );
 }
