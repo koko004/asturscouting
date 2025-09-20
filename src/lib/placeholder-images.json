@@ -1,3 +1,41 @@
+
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "team-logo-1",
+      "description": "Logo for Real Sporting",
+      "imageUrl": "https://picsum.photos/seed/1/100/100",
+      "imageHint": "team logo"
+    },
+    {
+      "id": "team-logo-2",
+      "description": "Logo for Real Oviedo",
+      "imageUrl": "https://picsum.photos/seed/2/100/100",
+      "imageHint": "team logo"
+    },
+    {
+      "id": "team-logo-3",
+      "description": "Logo for UP Langreo",
+      "imageUrl": "https://picsum.photos/seed/3/100/100",
+      "imageHint": "team logo"
+    },
+    {
+      "id": "team-logo-4",
+      "description": "Logo for Marino de Luanco",
+      "imageUrl": "https://picsum.photos/seed/4/100/100",
+      "imageHint": "team logo"
+    },
+    {
+      "id": "team-logo-5",
+      "description": "Logo for Caudal Deportivo",
+      "imageUrl": "https://picsum.photos/seed/5/100/100",
+      "imageHint": "team logo"
+    },
+    {
+      "id": "team-logo-6",
+      "description": "Logo for CD Covadonga",
+      "imageUrl": "https://picsum.photos/seed/6/100/100",
+      "imageHint": "team logo"
+    }
+  ]
 }
