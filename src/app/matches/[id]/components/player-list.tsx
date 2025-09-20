@@ -22,10 +22,11 @@ interface PlayerListProps {
   players: Player[];
   onPlayerUpdate: (players: Player[]) => void;
   onEditPlayer: (player: Player) => void;
-  onAddNewPlayer: () => void; // This is kept for now, but the button is removed.
+  onAddNewPlayer: () => void;
+  isReadOnly?: boolean;
 }
 
-export default function PlayerList({ players, onPlayerUpdate, onEditPlayer }: PlayerListProps) {
+export default function PlayerList({ players, onPlayerUpdate, onEditPlayer, isReadOnly = false }: PlayerListProps) {
   
   const handleDelete = (playerId: string) => {
     onPlayerUpdate(players.filter((p) => p.id !== playerId));
@@ -36,7 +37,6 @@ export default function PlayerList({ players, onPlayerUpdate, onEditPlayer }: Pl
       <Card className="h-full">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Evaluación de Jugadores</CardTitle>
-          {/* "Add Player" button is removed as per the new flow */}
         </CardHeader>
         <CardContent>
           <ScrollArea className="h-[calc(100vh-16rem)]">
@@ -52,30 +52,32 @@ export default function PlayerList({ players, onPlayerUpdate, onEditPlayer }: Pl
                         <Badge variant="default">Valoración: {player.rating}/10</Badge>
                       </div>
                     </div>
-                    <div className="flex gap-1">
-                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onEditPlayer(player)}>
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Esta acción no se puede deshacer. Esto eliminará permanentemente los datos del jugador.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDelete(player.id)}>Eliminar</AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </div>
+                    {!isReadOnly && (
+                      <div className="flex gap-1">
+                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onEditPlayer(player)}>
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Esta acción no se puede deshacer. Esto eliminará permanentemente los datos del jugador.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleDelete(player.id)}>Eliminar</AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    )}
                   </div>
                   {player.notes && <p className="mt-3 border-t pt-3 text-sm text-muted-foreground italic">"{player.notes}"</p>}
                 </Card>

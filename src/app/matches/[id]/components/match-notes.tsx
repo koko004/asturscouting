@@ -7,7 +7,11 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Save } from 'lucide-react';
 
-export default function MatchNotes() {
+interface MatchNotesProps {
+    isReadOnly?: boolean;
+}
+
+export default function MatchNotes({ isReadOnly = false }: MatchNotesProps) {
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
     
@@ -26,7 +30,7 @@ export default function MatchNotes() {
         <Card>
             <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle>Notas Generales del Partido</CardTitle>
-                <Button size="sm" onClick={handleSave} disabled={isLoading}>
+                <Button size="sm" onClick={handleSave} disabled={isLoading || isReadOnly}>
                     <Save className="mr-2 h-4 w-4" />
                     {isLoading ? 'Guardando...' : 'Guardar Notas'}
                 </Button>
@@ -35,6 +39,7 @@ export default function MatchNotes() {
                 <Textarea 
                     placeholder="Anota aquí tus observaciones generales sobre el partido, formaciones del equipo y rendimiento general..."
                     className="min-h-[120px] resize-y"
+                    disabled={isReadOnly}
                 />
             </CardContent>
         </Card>

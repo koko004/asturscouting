@@ -10,6 +10,7 @@ export const matches: Match[] = [
     awayTeam: { name: 'Real Oviedo', logoUrl: getImage('team-logo-2') },
     date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
     competition: 'Segunda División',
+    isClosed: false,
   },
   {
     id: '2',
@@ -17,6 +18,7 @@ export const matches: Match[] = [
     awayTeam: { name: 'Marino de Luanco', logoUrl: getImage('team-logo-4') },
     date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
     competition: 'Segunda B',
+    isClosed: true,
   },
   {
     id: '3',
@@ -24,6 +26,7 @@ export const matches: Match[] = [
     awayTeam: { name: 'CD Covadonga', logoUrl: getImage('team-logo-6') },
     date: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toISOString(),
     competition: 'Tercera División',
+    isClosed: false,
   },
 ];
 

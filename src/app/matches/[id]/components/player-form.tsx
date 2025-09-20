@@ -50,6 +50,7 @@ interface PlayerFormProps {
   onOpenChange: (open: boolean) => void;
   player?: Player | null;
   onSave: (player: Player) => void;
+  isReadOnly?: boolean;
 }
 
 export default function PlayerForm({
@@ -57,6 +58,7 @@ export default function PlayerForm({
   onOpenChange,
   player,
   onSave,
+  isReadOnly = false,
 }: PlayerFormProps) {
   const form = useForm<PlayerFormValues>({
     resolver: zodResolver(formSchema),
@@ -108,109 +110,111 @@ export default function PlayerForm({
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nombre del Jugador</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ej., Lionel Messi" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="grid grid-cols-2 gap-4">
+            <fieldset disabled={isReadOnly} className="space-y-4">
               <FormField
                 control={form.control}
-                name="jerseyNumber"
+                name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Dorsal</FormLabel>
+                    <FormLabel>Nombre del Jugador</FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder="10" {...field} value={field.value ?? ''} />
+                      <Input placeholder="Ej., Lionel Messi" {...field} />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="jerseyNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Dorsal</FormLabel>
+                      <FormControl>
+                        <Input type="number" placeholder="10" {...field} value={field.value ?? ''} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="age"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Edad</FormLabel>
+                      <FormControl>
+                        <Input type="number" placeholder="24" {...field} value={field.value ?? ''} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <FormField
+                control={form.control}
+                name="position"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Posición</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecciona una posición" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {playerPositions.map((pos) => (
+                          <SelectItem key={pos} value={pos}>
+                            {pos}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
               />
               <FormField
                 control={form.control}
-                name="age"
+                name="rating"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Edad</FormLabel>
+                    <FormLabel>Valoración: {field.value}</FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder="24" {...field} value={field.value ?? ''} />
+                      <Slider
+                        min={1}
+                        max={10}
+                        step={1}
+                        defaultValue={[field.value]}
+                        onValueChange={(value) => field.onChange(value[0])}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="notes"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Notas del Jugador</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="Fortalezas, debilidades, etc." {...field} value={field.value ?? ''} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </div>
-            <FormField
-              control={form.control}
-              name="position"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Posición</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecciona una posición" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {playerPositions.map((pos) => (
-                        <SelectItem key={pos} value={pos}>
-                          {pos}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="rating"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Valoración: {field.value}</FormLabel>
-                  <FormControl>
-                    <Slider
-                      min={1}
-                      max={10}
-                      step={1}
-                      defaultValue={[field.value]}
-                      onValueChange={(value) => field.onChange(value[0])}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="notes"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Notas del Jugador</FormLabel>
-                  <FormControl>
-                    <Textarea placeholder="Fortalezas, debilidades, etc." {...field} value={field.value ?? ''} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            </fieldset>
             <DialogFooter>
               <DialogClose asChild>
                 <Button type="button" variant="outline">
-                  Cancelar
+                  {isReadOnly ? 'Cerrar' : 'Cancelar'}
                 </Button>
               </DialogClose>
-              <Button type="submit">Guardar Jugador</Button>
+              {!isReadOnly && <Button type="submit">Guardar Jugador</Button>}
             </DialogFooter>
           </form>
         </Form>

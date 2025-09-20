@@ -40,9 +40,10 @@ const SoccerFieldSVG = () => (
 
 interface InteractiveFieldProps {
     onPlayerClick: (player: {id: string, name: string, team: 'home' | 'away'}) => void;
+    isReadOnly?: boolean;
 }
 
-export default function InteractiveField({ onPlayerClick }: InteractiveFieldProps) {
+export default function InteractiveField({ onPlayerClick, isReadOnly = false }: InteractiveFieldProps) {
   const [homeFormation, setHomeFormation] = useState<Formation>('4-4-2');
   const [awayFormation, setAwayFormation] = useState<Formation>('4-3-3');
   const fieldRef = useRef<HTMLDivElement>(null);
@@ -76,6 +77,7 @@ export default function InteractiveField({ onPlayerClick }: InteractiveFieldProp
   };
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>, id: string) => {
+    if (isReadOnly) return;
     e.currentTarget.setPointerCapture(e.pointerId);
     setDraggedElementId(id);
     setIsDragging(false);
@@ -83,7 +85,7 @@ export default function InteractiveField({ onPlayerClick }: InteractiveFieldProp
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!draggedElementId || !fieldRef.current) return;
+    if (isReadOnly || !draggedElementId || !fieldRef.current) return;
 
     const dx = Math.abs(e.clientX - dragStartRef.current.x);
     const dy = Math.abs(e.clientY - dragStartRef.current.y);
@@ -138,7 +140,7 @@ export default function InteractiveField({ onPlayerClick }: InteractiveFieldProp
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
               <div className="flex items-center justify-between sm:justify-start gap-2">
                 <Label htmlFor="home-formation">Equipo Local</Label>
-                <Select onValueChange={(value: Formation) => setHomeFormation(value)} defaultValue={homeFormation}>
+                <Select onValueChange={(value: Formation) => setHomeFormation(value)} defaultValue={homeFormation} disabled={isReadOnly}>
                   <SelectTrigger id="home-formation" className="w-[120px]">
                     <SelectValue placeholder="Formación" />
                   </SelectTrigger>
@@ -149,7 +151,7 @@ export default function InteractiveField({ onPlayerClick }: InteractiveFieldProp
               </div>
               <div className="flex items-center justify-between sm:justify-start gap-2">
                 <Label htmlFor="away-formation">Equipo Visitante</Label>
-                <Select onValueChange={(value: Formation) => setAwayFormation(value)} defaultValue={awayFormation}>
+                <Select onValueChange={(value: Formation) => setAwayFormation(value)} defaultValue={awayFormation} disabled={isReadOnly}>
                   <SelectTrigger id="away-formation" className="w-[120px]">
                     <SelectValue placeholder="Formación" />
                   </SelectTrigger>
@@ -158,7 +160,7 @@ export default function InteractiveField({ onPlayerClick }: InteractiveFieldProp
                   </SelectContent>
                 </Select>
               </div>
-              <Button size="sm" onClick={handleSave} disabled={isSaving} className="w-full sm:w-auto">
+              <Button size="sm" onClick={handleSave} disabled={isSaving || isReadOnly} className="w-full sm:w-auto">
                 <Save className="mr-2 h-4 w-4" /> {isSaving ? 'Guardando...' : 'Guardar Posiciones'}
               </Button>
             </div>
@@ -168,7 +170,7 @@ export default function InteractiveField({ onPlayerClick }: InteractiveFieldProp
         <div
             ref={fieldRef}
             onPointerMove={handlePointerMove}
-            className="relative w-full max-w-lg touch-none select-none overflow-hidden rounded-lg aspect-[680/1050]"
+            className={`relative w-full max-w-lg touch-none select-none overflow-hidden rounded-lg aspect-[680/1050] ${isReadOnly ? 'cursor-not-allowed' : ''}`}
         >
             <div className="absolute inset-0">
             <SoccerFieldSVG />
@@ -185,7 +187,7 @@ export default function InteractiveField({ onPlayerClick }: InteractiveFieldProp
                         setIsDragging(false);
                     }
                 }}
-                className="absolute flex h-7 w-7 -translate-x-1/2 -translate-y-1/2 cursor-grab items-center justify-center rounded-full border-2 text-white shadow-lg active:cursor-grabbing"
+                className={`absolute flex h-7 w-7 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 text-white shadow-lg ${isReadOnly ? 'cursor-not-allowed' : 'cursor-grab active:cursor-grabbing'}`}
                 style={{
                 left: `${el.position.x}%`,
                 top: `${el.position.y}%`,

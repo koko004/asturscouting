@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { matches } from '@/lib/data';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Lock, Unlock } from 'lucide-react';
 import PageHeader from '@/components/page-header';
 
 export default function MatchesPage() {
@@ -16,7 +16,12 @@ export default function MatchesPage() {
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {matches.map((match) => (
           <Card key={match.id} className="flex flex-col transition-all hover:shadow-lg">
-            <CardHeader>
+            <CardHeader className="relative">
+              {match.isClosed ? (
+                <Lock className="absolute right-4 top-4 h-5 w-5 text-muted-foreground" />
+              ) : (
+                <Unlock className="absolute right-4 top-4 h-5 w-5 text-primary" />
+              )}
               <CardTitle className="text-base font-medium text-muted-foreground">
                 {match.competition}
               </CardTitle>
@@ -51,7 +56,7 @@ export default function MatchesPage() {
                 <span>{new Date(match.date).toLocaleString('es-ES', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span>
                 <Button asChild variant="ghost" size="sm">
                   <Link href={`/matches/${match.id}`}>
-                    Iniciar Informe
+                    {match.isClosed ? 'Ver Informe' : 'Iniciar Informe'}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
