@@ -2,8 +2,6 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/toaster';
-import AppHeader from '@/components/app-header';
-import AppSidebar from '@/components/app-sidebar';
 import Template from './template';
 
 export const metadata: Metadata = {
@@ -31,17 +29,9 @@ export default function RootLayout({
           'min-h-screen bg-background font-body antialiased',
         )}
       >
-        <div className="relative flex min-h-screen flex-col">
-          <AppHeader />
-          <div className="flex-1">
-            <div className="flex h-full">
-              <AppSidebar />
-              <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-8">
-                <Template>{children}</Template>
-              </main>
-            </div>
-          </div>
-        </div>
+        <Template>
+            {children}
+        </Template>
         <Toaster />
       </body>
     </html>
