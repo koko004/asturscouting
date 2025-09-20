@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import { Logo } from '@/components/icons';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -14,10 +15,10 @@ import {
 export default function AppHeader() {
   return (
     <header className="sticky top-0 z-50 flex h-16 items-center border-b bg-background/80 px-4 backdrop-blur-sm md:px-8">
-      <div className="flex items-center gap-2">
+      <Link href="/" className="flex items-center gap-2">
         <Logo className="h-6 w-6 text-primary" />
         <h1 className="font-headline text-lg font-bold">AsturScouting</h1>
-      </div>
+      </Link>
       <div className="ml-auto">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
