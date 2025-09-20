@@ -1,5 +1,6 @@
 'use client';
 
+import * as React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -85,7 +86,7 @@ export default function PlayerForm({
     if (isOpen) {
       form.reset(
         player
-          ? { ...player, rating: player.rating || 5 }
+          ? { ...player, rating: player.rating || 5, notes: player.notes || '' }
           : {
               name: '',
               jerseyNumber: '' as unknown as number,
@@ -128,7 +129,7 @@ export default function PlayerForm({
                   <FormItem>
                     <FormLabel>Jersey No.</FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder="10" {...field} />
+                      <Input type="number" placeholder="10" {...field} value={field.value ?? ''} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -141,7 +142,7 @@ export default function PlayerForm({
                   <FormItem>
                     <FormLabel>Age</FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder="24" {...field} />
+                      <Input type="number" placeholder="24" {...field} value={field.value ?? ''} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
