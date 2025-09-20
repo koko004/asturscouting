@@ -4,7 +4,7 @@ import { formations } from './types';
 const homeColor = 'hsl(210, 80%, 55%)';
 const awayColor = 'hsl(0, 80%, 55%)';
 
-// Positions are defined as { x, y } percentages
+// Positions are defined as { x, y } percentages for the bottom half of the field
 const formationPositions: Record<Formation, { x: number; y: number }[]> = {
   '4-4-2': [
     // Goalkeeper
@@ -64,8 +64,10 @@ export function getPlayerPositions(formation: Formation, team: 'home' | 'away'):
     const prefix = team === 'home' ? 'H' : 'A';
 
     return positions.map((pos, index) => {
+        // Home team is on the bottom half, away team is on the top half
         const y = team === 'home' ? pos.y : 100 - pos.y;
-        const x = team === 'home' ? pos.x : 100 - pos.x;
+        // For the away team, we reflect the x position as well
+        const x = team === 'home' ? pos.x : pos.x;
 
         return {
             id: `${prefix}${index + 1}`,
