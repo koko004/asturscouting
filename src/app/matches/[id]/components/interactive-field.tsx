@@ -107,7 +107,7 @@ export default function InteractiveField() {
       </CardHeader>
       <CardContent
         ref={fieldRef}
-        className="relative h-[500px] select-none touch-none overflow-hidden rounded-lg"
+        className="relative aspect-[680/1050] w-full max-w-lg mx-auto select-none touch-none overflow-hidden rounded-lg"
       >
         <div className="absolute inset-0">
           <SoccerFieldSVG />
