@@ -15,8 +15,8 @@ export default function MatchNotes() {
         setIsLoading(true);
         setTimeout(() => {
             toast({
-                title: 'Notes Saved',
-                description: 'Your match notes have been successfully saved.',
+                title: 'Notas Guardadas',
+                description: 'Tus notas del partido han sido guardadas con éxito.',
             });
             setIsLoading(false);
         }, 1000);
@@ -25,15 +25,15 @@ export default function MatchNotes() {
     return (
         <Card>
             <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>General Match Notes</CardTitle>
+                <CardTitle>Notas Generales del Partido</CardTitle>
                 <Button size="sm" onClick={handleSave} disabled={isLoading}>
                     <Save className="mr-2 h-4 w-4" />
-                    {isLoading ? 'Saving...' : 'Save Notes'}
+                    {isLoading ? 'Guardando...' : 'Guardar Notas'}
                 </Button>
             </CardHeader>
             <CardContent>
                 <Textarea 
-                    placeholder="Record your general observations about the match, team formations, and overall performance here..."
+                    placeholder="Anota aquí tus observaciones generales sobre el partido, formaciones del equipo y rendimiento general..."
                     className="min-h-[120px] resize-y"
                 />
             </CardContent>

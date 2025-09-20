@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { matches, initialPlayers } from '@/lib/data';
+import { matches } from '@/lib/data';
 import type { Player } from '@/lib/types';
 import { useState } from 'react';
 import PageHeader from '@/components/page-header';
@@ -22,7 +22,7 @@ export default function MatchPage() {
   if (!match) {
     return (
       <div className="flex h-full items-center justify-center">
-        <p>Match not found.</p>
+        <p>Partido no encontrado.</p>
       </div>
     );
   }
@@ -49,9 +49,9 @@ export default function MatchPage() {
       const newPlayer: Player = {
         id: tacticalPlayer.id,
         name: tacticalPlayer.name,
-        jerseyNumber: parseInt(tacticalPlayer.name.replace(/[^0-9]/g, ''), 10),
+        jerseyNumber: parseInt(tacticalPlayer.name.replace(/[^0-9]/g, ''), 10) || 0,
         age: 20, // Default age
-        position: 'Midfielder (MID)', // Default position
+        position: 'Centrocampista (CEN)', // Default position
         rating: 5,
         notes: '',
       };
@@ -74,7 +74,7 @@ export default function MatchPage() {
     <div className="flex flex-col gap-8">
        <PageHeader
         title={`${match.homeTeam.name} vs ${match.awayTeam.name}`}
-        description={`Scouting Report for ${match.competition}`}
+        description={`Informe de Scouting para ${match.competition}`}
       />
       <div className="flex flex-col gap-6">
         <InteractiveField onPlayerClick={handleSelectPlayerFromField} />

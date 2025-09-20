@@ -6,7 +6,7 @@ export type Match = {
   competition: string;
 };
 
-export const playerPositions = ['Goalkeeper (GK)', 'Defender (DEF)', 'Midfielder (MID)', 'Forward (FWD)'] as const;
+export const playerPositions = ['Portero (POR)', 'Defensa (DEF)', 'Centrocampista (CEN)', 'Delantero (DEL)'] as const;
 export type PlayerPosition = (typeof playerPositions)[number];
 
 export type Player = {

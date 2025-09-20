@@ -10,8 +10,8 @@ export default function MatchesPage() {
   return (
     <div className="flex flex-col gap-8">
       <PageHeader
-        title="Assigned Matches"
-        description="Review your assigned matches for the upcoming weekend."
+        title="Partidos Asignados"
+        description="Revisa tus partidos asignados para el próximo fin de semana."
       />
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {matches.map((match) => (
@@ -48,10 +48,10 @@ export default function MatchesPage() {
             </CardHeader>
             <CardContent className="flex flex-1 flex-col justify-end">
               <div className="flex items-center justify-between text-sm text-muted-foreground">
-                <span>{new Date(match.date).toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span>
+                <span>{new Date(match.date).toLocaleString('es-ES', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span>
                 <Button asChild variant="ghost" size="sm">
                   <Link href={`/matches/${match.id}`}>
-                    Start Report
+                    Iniciar Informe
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>

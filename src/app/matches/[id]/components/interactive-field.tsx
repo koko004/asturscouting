@@ -28,13 +28,13 @@ const SoccerFieldSVG = () => (
         <rect x="138.5" y="0" width="403" height="165" stroke="white" strokeWidth="2" fill="none" />
         <rect x="248.5" y="0" width="183" height="55" stroke="white" strokeWidth="2" fill="none" />
         <circle cx="340" cy="115" r="3" fill="white" />
-        <path d="M 248.5 165 A 91.5 91.5 0 0 0 431.5 165" stroke="white" strokeWidth="2" fill="none" />
+        <path d="M 248.5 165 A 91.5 91.5 0 0 1 431.5 165" stroke="white" strokeWidth="2" fill="none" />
 
         {/* Bottom penalty area */}
         <rect x="138.5" y="885" width="403" height="165" stroke="white" strokeWidth="2" fill="none" />
         <rect x="248.5" y="995" width="183" height="55" stroke="white" strokeWidth="2" fill="none" />
         <circle cx="340" cy="935" r="3" fill="white" />
-        <path d="M 248.5 885 A 91.5 91.5 0 0 1 431.5 885" stroke="white" strokeWidth="2" fill="none" />
+        <path d="M 248.5 885 A 91.5 91.5 0 0 0 431.5 885" stroke="white" strokeWidth="2" fill="none" />
     </svg>
 );
 
@@ -68,8 +68,8 @@ export default function InteractiveField({ onPlayerClick }: InteractiveFieldProp
     console.log('Saving player positions:', elements.map(e => ({id: e.id, pos: e.position})));
     setTimeout(() => {
       toast({
-        title: 'Positions Saved',
-        description: 'The current player positions have been saved.',
+        title: 'Posiciones Guardadas',
+        description: 'Las posiciones actuales de los jugadores han sido guardadas.',
       });
       setIsSaving(false);
     }, 1000);
@@ -94,8 +94,8 @@ export default function InteractiveField({ onPlayerClick }: InteractiveFieldProp
     
     if (isDragging) {
       const fieldRect = fieldRef.current.getBoundingClientRect();
-      let x = Math.max(0, Math.min(100, ((e.clientX - fieldRect.left) / fieldRect.width) * 100));
-      let y = Math.max(0, Math.min(100, ((e.clientY - fieldRect.top) / fieldRect.height) * 100));
+      let x = ((e.clientX - fieldRect.left) / fieldRect.width) * 100;
+      let y = ((e.clientY - fieldRect.top) / fieldRect.height) * 100;
       
       const isHomePlayer = draggedElementId.startsWith('H');
 
@@ -104,6 +104,9 @@ export default function InteractiveField({ onPlayerClick }: InteractiveFieldProp
       } else {
           y = Math.min(50, y);
       }
+
+      x = Math.max(0, Math.min(100, x));
+      y = Math.max(0, Math.min(100, y));
 
       setElements((prev) =>
         prev.map((el) => (el.id === draggedElementId ? { ...el, position: { x, y } } : el))
@@ -129,35 +132,36 @@ export default function InteractiveField({ onPlayerClick }: InteractiveFieldProp
 
   return (
     <Card className="h-full flex flex-col">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Interactive Field</CardTitle>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <Label htmlFor="home-formation">Home Team</Label>
-            <Select onValueChange={(value: Formation) => setHomeFormation(value)} defaultValue={homeFormation}>
-              <SelectTrigger id="home-formation" className="w-[120px]">
-                <SelectValue placeholder="Formation" />
-              </SelectTrigger>
-              <SelectContent>
-                {formations.map(f => <SelectItem key={f} value={f}>{f}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center gap-2">
-            <Label htmlFor="away-formation">Away Team</Label>
-            <Select onValueChange={(value: Formation) => setAwayFormation(value)} defaultValue={awayFormation}>
-              <SelectTrigger id="away-formation" className="w-[120px]">
-                <SelectValue placeholder="Formation" />
-              </SelectTrigger>
-              <SelectContent>
-                {formations.map(f => <SelectItem key={f} value={f}>{f}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <Button size="sm" onClick={handleSave} disabled={isSaving}>
-            <Save className="mr-2 h-4 w-4" /> {isSaving ? 'Saving...' : 'Save Positions'}
-          </Button>
+      <CardHeader>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <CardTitle>Campo Interactivo</CardTitle>
+            <div className="flex items-center gap-4 flex-wrap">
+              <div className="flex items-center gap-2">
+                <Label htmlFor="home-formation">Equipo Local</Label>
+                <Select onValueChange={(value: Formation) => setHomeFormation(value)} defaultValue={homeFormation}>
+                  <SelectTrigger id="home-formation" className="w-[120px]">
+                    <SelectValue placeholder="Formación" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {formations.map(f => <SelectItem key={f} value={f}>{f}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex items-center gap-2">
+                <Label htmlFor="away-formation">Equipo Visitante</Label>
+                <Select onValueChange={(value: Formation) => setAwayFormation(value)} defaultValue={awayFormation}>
+                  <SelectTrigger id="away-formation" className="w-[120px]">
+                    <SelectValue placeholder="Formación" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {formations.map(f => <SelectItem key={f} value={f}>{f}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button size="sm" onClick={handleSave} disabled={isSaving} className="w-full sm:w-auto">
+                <Save className="mr-2 h-4 w-4" /> {isSaving ? 'Guardando...' : 'Guardar Posiciones'}
+              </Button>
+            </div>
         </div>
       </CardHeader>
       <CardContent className="flex-1 flex items-center justify-center p-2">

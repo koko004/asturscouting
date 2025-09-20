@@ -35,9 +35,9 @@ import { Slider } from '@/components/ui/slider';
 import { Textarea } from '@/components/ui/textarea';
 
 const formSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters.'),
-  jerseyNumber: z.coerce.number().int().min(1, 'Jersey number must be at least 1.'),
-  age: z.coerce.number().int().min(14, 'Age must be at least 14.'),
+  name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres.'),
+  jerseyNumber: z.coerce.number().int().min(1, 'El dorsal debe ser al menos 1.'),
+  age: z.coerce.number().int().min(14, 'La edad debe ser al menos 14.'),
   position: z.enum(playerPositions),
   rating: z.number().min(1).max(10),
   notes: z.string().optional(),
@@ -66,7 +66,7 @@ export default function PlayerForm({
           name: '',
           jerseyNumber: '' as unknown as number, // Prevent uncontrolled to controlled error
           age: '' as unknown as number, // Prevent uncontrolled to controlled error
-          position: 'Midfielder (MID)',
+          position: 'Centrocampista (CEN)',
           rating: 5,
           notes: '',
         },
@@ -91,7 +91,7 @@ export default function PlayerForm({
               name: '',
               jerseyNumber: '' as unknown as number,
               age: '' as unknown as number,
-              position: 'Midfielder (MID)',
+              position: 'Centrocampista (CEN)',
               rating: 5,
               notes: '',
             }
@@ -104,7 +104,7 @@ export default function PlayerForm({
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
-          <DialogTitle>{player ? 'Edit Player' : 'Add New Player'}</DialogTitle>
+          <DialogTitle>{player?.name ? `Editar Jugador: ${player.name}` : 'Añadir Nuevo Jugador'}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -113,9 +113,9 @@ export default function PlayerForm({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Player Name</FormLabel>
+                  <FormLabel>Nombre del Jugador</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., Lionel Messi" {...field} />
+                    <Input placeholder="Ej., Lionel Messi" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -127,7 +127,7 @@ export default function PlayerForm({
                 name="jerseyNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Jersey No.</FormLabel>
+                    <FormLabel>Dorsal</FormLabel>
                     <FormControl>
                       <Input type="number" placeholder="10" {...field} value={field.value ?? ''} />
                     </FormControl>
@@ -140,7 +140,7 @@ export default function PlayerForm({
                 name="age"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Age</FormLabel>
+                    <FormLabel>Edad</FormLabel>
                     <FormControl>
                       <Input type="number" placeholder="24" {...field} value={field.value ?? ''} />
                     </FormControl>
@@ -154,11 +154,11 @@ export default function PlayerForm({
               name="position"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Position</FormLabel>
+                  <FormLabel>Posición</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a position" />
+                        <SelectValue placeholder="Selecciona una posición" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -178,7 +178,7 @@ export default function PlayerForm({
               name="rating"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Rating: {field.value}</FormLabel>
+                  <FormLabel>Valoración: {field.value}</FormLabel>
                   <FormControl>
                     <Slider
                       min={1}
@@ -196,9 +196,9 @@ export default function PlayerForm({
               name="notes"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Player Notes</FormLabel>
+                  <FormLabel>Notas del Jugador</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Strengths, weaknesses, etc." {...field} value={field.value ?? ''} />
+                    <Textarea placeholder="Fortalezas, debilidades, etc." {...field} value={field.value ?? ''} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -207,10 +207,10 @@ export default function PlayerForm({
             <DialogFooter>
               <DialogClose asChild>
                 <Button type="button" variant="outline">
-                  Cancel
+                  Cancelar
                 </Button>
               </DialogClose>
-              <Button type="submit">Save Player</Button>
+              <Button type="submit">Guardar Jugador</Button>
             </DialogFooter>
           </form>
         </Form>

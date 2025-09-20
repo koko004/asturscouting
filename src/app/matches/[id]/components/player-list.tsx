@@ -35,7 +35,7 @@ export default function PlayerList({ players, onPlayerUpdate, onEditPlayer }: Pl
     <>
       <Card className="h-full">
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Player Evaluation</CardTitle>
+          <CardTitle>Evaluación de Jugadores</CardTitle>
           {/* "Add Player" button is removed as per the new flow */}
         </CardHeader>
         <CardContent>
@@ -48,8 +48,8 @@ export default function PlayerList({ players, onPlayerUpdate, onEditPlayer }: Pl
                       <h4 className="font-bold">{player.name} <span className="text-muted-foreground font-normal">#{player.jerseyNumber}</span></h4>
                       <p className="text-sm text-muted-foreground">{player.position}</p>
                       <div className="mt-2 flex items-center gap-2">
-                        <Badge variant="secondary">Age: {player.age}</Badge>
-                        <Badge variant="default">Rating: {player.rating}/10</Badge>
+                        <Badge variant="secondary">Edad: {player.age}</Badge>
+                        <Badge variant="default">Valoración: {player.rating}/10</Badge>
                       </div>
                     </div>
                     <div className="flex gap-1">
@@ -61,17 +61,17 @@ export default function PlayerList({ players, onPlayerUpdate, onEditPlayer }: Pl
                           <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">
                             <Trash2 className="h-4 w-4" />
                           </Button>
-                        </AlertDialogTrigger>
+                        AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                            <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
                             <AlertDialogDescription>
-                              This action cannot be undone. This will permanently delete the player data.
+                              Esta acción no se puede deshacer. Esto eliminará permanentemente los datos del jugador.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDelete(player.id)}>Delete</AlertDialogAction>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDelete(player.id)}>Eliminar</AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>
@@ -83,8 +83,8 @@ export default function PlayerList({ players, onPlayerUpdate, onEditPlayer }: Pl
               {players.length === 0 && (
                 <div className="flex h-[calc(100vh-20rem)] flex-col items-center justify-center text-center text-sm text-muted-foreground">
                     <Users className="h-12 w-12 text-muted-foreground/50" />
-                    <p className="mt-4 font-semibold">No players evaluated yet.</p>
-                    <p className="mt-1">Tap on a player on the field to start a report.</p>
+                    <p className="mt-4 font-semibold">Aún no hay jugadores evaluados.</p>
+                    <p className="mt-1">Toca un jugador en el campo para iniciar un informe.</p>
                 </div>
               )}
             </div>
