@@ -87,7 +87,14 @@ export default function InteractiveField() {
 
     const fieldRect = fieldRef.current.getBoundingClientRect();
     const x = Math.max(0, Math.min(100, ((e.clientX - fieldRect.left) / fieldRect.width) * 100));
-    const y = Math.max(0, Math.min(100, ((e.clientY - fieldRect.top) / fieldRect.height) * 100));
+    let y = Math.max(0, Math.min(100, ((e.clientY - fieldRect.top) / fieldRect.height) * 100));
+
+    const isHomePlayer = draggedElementId.startsWith('H');
+    if (isHomePlayer) {
+        y = Math.max(50, y); // Keep in bottom half
+    } else {
+        y = Math.min(50, y); // Keep in top half
+    }
 
     setElements((prev) =>
       prev.map((el) => (el.id === draggedElementId ? { ...el, position: { x, y } } : el))
@@ -95,13 +102,15 @@ export default function InteractiveField() {
   };
 
   const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
-    e.currentTarget.releasePointerCapture(e.pointerId);
-    setDraggedElementId(null);
+    if(draggedElementId){
+      e.currentTarget.releasePointerCapture(e.pointerId);
+      setDraggedElementId(null);
+    }
   };
 
 
   return (
-    <Card className="h-full">
+    <Card className="h-full flex flex-col">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Interactive Field</CardTitle>
         <div className="flex items-center gap-4">
@@ -133,32 +142,34 @@ export default function InteractiveField() {
           </Button>
         </div>
       </CardHeader>
-      <CardContent
-        ref={fieldRef}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerLeave={handlePointerUp}
-        className="relative mx-auto aspect-[680/1050] w-full max-w-lg touch-none select-none overflow-hidden rounded-lg"
-      >
-        <div className="absolute inset-0">
-          <SoccerFieldSVG />
+      <CardContent className="flex-1 flex items-center justify-center p-2">
+        <div
+            ref={fieldRef}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerLeave={handlePointerUp}
+            className="relative aspect-[680/1050] w-full max-w-lg touch-none select-none overflow-hidden rounded-lg"
+        >
+            <div className="absolute inset-0">
+            <SoccerFieldSVG />
+            </div>
+            {elements.map((el) => (
+            <div
+                key={el.id}
+                onPointerDown={(e) => handlePointerDown(e, el.id)}
+                className="absolute flex h-7 w-7 -translate-x-1/2 -translate-y-1/2 cursor-grab items-center justify-center rounded-full border-2 text-white shadow-lg active:cursor-grabbing"
+                style={{
+                left: `${el.position.x}%`,
+                top: `${el.position.y}%`,
+                backgroundColor: el.color,
+                borderColor: 'rgba(255, 255, 255, 0.7)',
+                touchAction: 'none',
+                }}
+            >
+                <span className="text-[10px] font-bold">{el.label}</span>
+            </div>
+            ))}
         </div>
-        {elements.map((el) => (
-          <div
-            key={el.id}
-            onPointerDown={(e) => handlePointerDown(e, el.id)}
-            className="absolute flex h-7 w-7 -translate-x-1/2 -translate-y-1/2 cursor-grab items-center justify-center rounded-full border-2 text-white shadow-lg active:cursor-grabbing"
-            style={{
-              left: `${el.position.x}%`,
-              top: `${el.position.y}%`,
-              backgroundColor: el.color,
-              borderColor: 'rgba(255, 255, 255, 0.7)',
-              touchAction: 'none',
-            }}
-          >
-             <span className="text-[10px] font-bold">{el.label}</span>
-          </div>
-        ))}
       </CardContent>
       <SummaryModal isOpen={isModalOpen} setIsOpen={setIsModalOpen} summary={summary} />
     </Card>
