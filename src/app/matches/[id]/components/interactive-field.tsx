@@ -92,13 +92,17 @@ export default function InteractiveField() {
     const fieldRect = fieldRef.current.getBoundingClientRect();
     const x = Math.max(0, Math.min(100, ((e.clientX - fieldRect.left) / fieldRect.width) * 100));
     let y = Math.max(0, Math.min(100, ((e.clientY - fieldRect.top) / fieldRect.height) * 100));
-
+    
     const isHomePlayer = draggedElementId.startsWith('H');
+
     if (isHomePlayer) {
-      y = Math.max(50, y);
+        // Restrict home players to the bottom half of the field (y >= 50)
+        y = Math.max(50, y);
     } else {
-      y = Math.min(50, y);
+        // Restrict away players to the top half of the field (y <= 50)
+        y = Math.min(50, y);
     }
+
 
     setElements((prev) =>
       prev.map((el) => (el.id === draggedElementId ? { ...el, position: { x, y } } : el))
@@ -152,7 +156,7 @@ export default function InteractiveField() {
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
             onPointerLeave={handlePointerUp}
-            className="relative aspect-[680/1050] w-full max-w-lg touch-none select-none overflow-hidden rounded-lg"
+            className="relative w-full max-w-lg touch-none select-none overflow-hidden rounded-lg aspect-[680/1050]"
         >
             <div className="absolute inset-0">
             <SoccerFieldSVG />
