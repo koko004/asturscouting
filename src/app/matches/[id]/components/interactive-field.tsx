@@ -135,8 +135,8 @@ export default function InteractiveField({ onPlayerClick }: InteractiveFieldProp
       <CardHeader>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <CardTitle>Campo Interactivo</CardTitle>
-            <div className="flex items-center gap-4 flex-wrap">
-              <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+              <div className="flex items-center justify-between sm:justify-start gap-2">
                 <Label htmlFor="home-formation">Equipo Local</Label>
                 <Select onValueChange={(value: Formation) => setHomeFormation(value)} defaultValue={homeFormation}>
                   <SelectTrigger id="home-formation" className="w-[120px]">
@@ -147,7 +147,7 @@ export default function InteractiveField({ onPlayerClick }: InteractiveFieldProp
                   </SelectContent>
                 </Select>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center justify-between sm:justify-start gap-2">
                 <Label htmlFor="away-formation">Equipo Visitante</Label>
                 <Select onValueChange={(value: Formation) => setAwayFormation(value)} defaultValue={awayFormation}>
                   <SelectTrigger id="away-formation" className="w-[120px]">
