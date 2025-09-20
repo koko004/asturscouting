@@ -1,7 +1,8 @@
+
 'use client';
 
-import { useState, useMemo } from 'react';
-import type { PlayerReport, Match, User } from '@/lib/admin-types';
+import { useState } from 'react';
+import type { PlayerReport, Match } from '@/lib/admin-types';
 import {
   Table,
   TableBody,
@@ -30,17 +31,15 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 
-interface PlayerReportsTableProps {
+interface MyReportsTableProps {
   reports: PlayerReport[];
   matches: Match[];
-  users: User[];
 }
 
-export default function PlayerReportsTable({ reports, matches, users }: PlayerReportsTableProps) {
+export default function MyReportsTable({ reports, matches }: MyReportsTableProps) {
   const [filterMatch, setFilterMatch] = useState('all');
   const [filterTeam, setFilterTeam] = useState('');
   const [filterPlayer, setFilterPlayer] = useState('');
-  const [filterScout, setFilterScout] = useState('all');
 
   const getMatchDescription = (matchId: string) => {
     const match = matches.find(m => m.id === matchId);
@@ -48,27 +47,16 @@ export default function PlayerReportsTable({ reports, matches, users }: PlayerRe
     return `${match.homeTeam.name} vs ${match.awayTeam.name}`;
   };
 
-  const getScoutName = (scoutId: string) => {
-      const scout = users.find(u => u.id === scoutId);
-      return scout?.name || 'Desconocido';
-  }
-
-  const scouts = useMemo(() => {
-    const scoutIds = new Set(reports.map(r => r.scoutId));
-    return users.filter(u => scoutIds.has(u.id));
-  }, [reports, users]);
-
   const filteredReports = reports.filter(report => {
     const matchFilterPassed = filterMatch === 'all' || report.matchId === filterMatch;
     const teamFilterPassed = !filterTeam || report.teamName.toLowerCase().includes(filterTeam.toLowerCase());
     const playerFilterPassed = !filterPlayer || report.playerName.toLowerCase().includes(filterPlayer.toLowerCase());
-    const scoutFilterPassed = filterScout === 'all' || report.scoutId === filterScout;
-    return matchFilterPassed && teamFilterPassed && playerFilterPassed && scoutFilterPassed;
+    return matchFilterPassed && teamFilterPassed && playerFilterPassed;
   });
 
   return (
     <div>
-      <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
+      <div className="mb-4 flex flex-col gap-4 sm:flex-row">
         <Select value={filterMatch} onValueChange={setFilterMatch}>
           <SelectTrigger className="sm:w-[250px]">
             <SelectValue placeholder="Filtrar por partido" />
@@ -78,19 +66,6 @@ export default function PlayerReportsTable({ reports, matches, users }: PlayerRe
             {matches.map(match => (
               <SelectItem key={match.id} value={match.id}>
                 {match.homeTeam.name} vs {match.awayTeam.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-         <Select value={filterScout} onValueChange={setFilterScout}>
-          <SelectTrigger className="sm:w-[200px]">
-            <SelectValue placeholder="Filtrar por ojeador" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos los ojeadores</SelectItem>
-            {scouts.map(scout => (
-              <SelectItem key={scout.id} value={scout.id}>
-                {scout.name}
               </SelectItem>
             ))}
           </SelectContent>
@@ -113,7 +88,6 @@ export default function PlayerReportsTable({ reports, matches, users }: PlayerRe
           <TableRow>
             <TableHead>Jugador</TableHead>
             <TableHead>Partido</TableHead>
-            <TableHead>Ojeador</TableHead>
             <TableHead>Valoración</TableHead>
             <TableHead className="text-right">Acciones</TableHead>
           </TableRow>
@@ -126,7 +100,6 @@ export default function PlayerReportsTable({ reports, matches, users }: PlayerRe
                 <div className="text-sm text-muted-foreground">{report.teamName}</div>
               </TableCell>
               <TableCell>{getMatchDescription(report.matchId)}</TableCell>
-              <TableCell>{getScoutName(report.scoutId)}</TableCell>
               <TableCell>
                 <div className="flex items-center">
                   <Badge variant="default" className="flex items-center gap-1">
@@ -145,9 +118,8 @@ export default function PlayerReportsTable({ reports, matches, users }: PlayerRe
                     <DialogHeader>
                       <DialogTitle>Notas de: {report.playerName}</DialogTitle>
                       <DialogDescription>
-                        <p>Ojeador: {getScoutName(report.scoutId)}</p>
-                        <p>Posición: {report.position}</p>
-                        <p>Partido: {getMatchDescription(report.matchId)}</p>
+                        Posición: {report.position} <br />
+                        Partido: {getMatchDescription(report.matchId)}
                       </DialogDescription>
                     </DialogHeader>
                     <div className="mt-4 rounded-md border bg-muted p-4">
@@ -160,7 +132,7 @@ export default function PlayerReportsTable({ reports, matches, users }: PlayerRe
           ))}
           {filteredReports.length === 0 && (
             <TableRow>
-              <TableCell colSpan={5} className="text-center">
+              <TableCell colSpan={4} className="text-center">
                 No se encontraron informes con los filtros actuales.
               </TableCell>
             </TableRow>

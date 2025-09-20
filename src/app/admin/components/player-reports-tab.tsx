@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { matches as allMatches, playerReports as allPlayerReports } from '@/lib/admin-data';
+import { matches as allMatches, playerReports as allPlayerReports, users } from '@/lib/admin-data';
 import PlayerReportsTable from './player-reports-table';
 
 
@@ -19,7 +19,7 @@ export default function PlayerReportsTab() {
         </div>
       </CardHeader>
       <CardContent>
-        <PlayerReportsTable reports={allPlayerReports} matches={allMatches} />
+        <PlayerReportsTable reports={allPlayerReports} matches={allMatches} users={users} />
       </CardContent>
     </Card>
   );

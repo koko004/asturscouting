@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ClipboardList, Settings, Shield } from 'lucide-react';
+import { ClipboardList, Settings, Shield, ClipboardCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   TooltipProvider,
@@ -13,6 +13,7 @@ import {
 
 const navItems = [
   { href: '/', label: 'Matches', icon: ClipboardList },
+  { href: '/my-reports', label: 'My Reports', icon: ClipboardCheck },
   { href: '/admin', label: 'Admin', icon: Shield },
   { href: '/settings', label: 'Settings', icon: Settings },
 ];

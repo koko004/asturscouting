@@ -29,6 +29,7 @@ export type PlayerReport = {
     id: string;
     playerId: string;
     matchId: string;
+    scoutId: string;
     teamName: string;
     playerName: string;
     position: PlayerPosition;

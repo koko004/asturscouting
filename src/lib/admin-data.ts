@@ -61,6 +61,7 @@ export const playerReports: PlayerReport[] = [
         id: 'pr1',
         playerId: 'p1',
         matchId: 'm2',
+        scoutId: 'u3',
         teamName: 'UP Langreo',
         playerName: 'David Gold',
         position: 'Delantero (DEL)',
@@ -71,6 +72,7 @@ export const playerReports: PlayerReport[] = [
         id: 'pr2',
         playerId: 'p2',
         matchId: 'm2',
+        scoutId: 'u3',
         teamName: 'Marino de Luanco',
         playerName: 'Juan Pérez',
         position: 'Centrocampista (CEN)',
@@ -81,10 +83,22 @@ export const playerReports: PlayerReport[] = [
         id: 'pr3',
         playerId: 'p3',
         matchId: 'm1',
+        scoutId: 'u2',
         teamName: 'Real Oviedo',
         playerName: 'Borja Sánchez',
         position: 'Centrocampista (CEN)',
         rating: 9,
         notes: 'Jugador diferencial, con mucho talento y capacidad para desequilibrar. El mejor del partido.'
+    },
+    {
+        id: 'pr4',
+        playerId: 'p4',
+        matchId: 'm1',
+        scoutId: 'u2',
+        teamName: 'Real Sporting',
+        playerName: 'Uros Djurdjevic',
+        position: 'Delantero (DEL)',
+        rating: 8,
+        notes: 'Delantero muy completo. Buen remate con ambas piernas y gran capacidad de lucha.'
     }
 ];
