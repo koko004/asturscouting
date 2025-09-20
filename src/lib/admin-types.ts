@@ -21,3 +21,17 @@ export type Match = {
     isClosed: boolean;
     assignedScoutId?: string;
 };
+
+
+export type PlayerPosition = 'Portero (POR)' | 'Defensa (DEF)' | 'Centrocampista (CEN)' | 'Delantero (DEL)';
+
+export type PlayerReport = {
+    id: string;
+    playerId: string;
+    matchId: string;
+    teamName: string;
+    playerName: string;
+    position: PlayerPosition;
+    rating: number; // 1-10
+    notes: string;
+}

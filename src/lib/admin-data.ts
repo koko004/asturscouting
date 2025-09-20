@@ -1,4 +1,4 @@
-import type { User, Match } from './admin-types';
+import type { User, Match, PlayerReport } from './admin-types';
 
 export const users: User[] = [
     {
@@ -26,7 +26,7 @@ export const users: User[] = [
 
 export const matches: Match[] = [
   {
-    id: '1',
+    id: 'm1',
     homeTeam: { name: 'Real Sporting', logoUrl: 'https://picsum.photos/seed/1/100/100' },
     awayTeam: { name: 'Real Oviedo', logoUrl: 'https://picsum.photos/seed/2/100/100' },
     date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
@@ -36,7 +36,7 @@ export const matches: Match[] = [
     assignedScoutId: 'u2',
   },
   {
-    id: '2',
+    id: 'm2',
     homeTeam: { name: 'UP Langreo', logoUrl: 'https://picsum.photos/seed/3/100/100' },
     awayTeam: { name: 'Marino de Luanco', logoUrl: 'https://picsum.photos/seed/4/100/100' },
     date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
@@ -46,7 +46,7 @@ export const matches: Match[] = [
     assignedScoutId: 'u3',
   },
   {
-    id: '3',
+    id: 'm3',
     homeTeam: { name: 'Caudal Deportivo', logoUrl: 'https://picsum.photos/seed/5/100/100' },
     awayTeam: { name: 'CD Covadonga', logoUrl: 'https://picsum.photos/seed/6/100/100' },
     date: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toISOString(),
@@ -54,4 +54,37 @@ export const matches: Match[] = [
     stadium: 'Hermanos Antuña',
     isClosed: false,
   },
+];
+
+export const playerReports: PlayerReport[] = [
+    { 
+        id: 'pr1',
+        playerId: 'p1',
+        matchId: 'm2',
+        teamName: 'UP Langreo',
+        playerName: 'David Gold',
+        position: 'Delantero (DEL)',
+        rating: 8,
+        notes: 'Muy rápido y con gran definición. Buen juego aéreo.'
+    },
+    { 
+        id: 'pr2',
+        playerId: 'p2',
+        matchId: 'm2',
+        teamName: 'Marino de Luanco',
+        playerName: 'Juan Pérez',
+        position: 'Centrocampista (CEN)',
+        rating: 7,
+        notes: 'Gran visión de juego y pases precisos. Le falta algo de físico.'
+    },
+    {
+        id: 'pr3',
+        playerId: 'p3',
+        matchId: 'm1',
+        teamName: 'Real Oviedo',
+        playerName: 'Borja Sánchez',
+        position: 'Centrocampista (CEN)',
+        rating: 9,
+        notes: 'Jugador diferencial, con mucho talento y capacidad para desequilibrar. El mejor del partido.'
+    }
 ];
