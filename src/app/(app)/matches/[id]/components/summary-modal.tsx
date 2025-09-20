@@ -26,10 +26,10 @@ export default function SummaryModal({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Wand2 className="h-5 w-5 text-primary" />
-            Tactical Summary
+            Resumen Táctico
           </DialogTitle>
           <DialogDescription>
-            AI-generated analysis of the current tactical setup on the field.
+            Análisis de la configuración táctica actual en el campo, generado por IA.
           </DialogDescription>
         </DialogHeader>
         <div className="prose prose-sm max-w-none rounded-md border bg-accent/50 p-4 text-accent-foreground">

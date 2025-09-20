@@ -105,19 +105,25 @@ export default function MatchPage() {
         title={`${match.homeTeam.name} vs ${match.awayTeam.name}`}
         description={`Informe de Scouting para ${match.competition}`}
       />
-      <div className="flex flex-col gap-6">
-        <InteractiveField onPlayerClick={handleSelectPlayerFromField} isReadOnly={match.isClosed} />
-        <PlayerList 
-          players={players} 
-          onPlayerUpdate={handlePlayerUpdate}
-          onEditPlayer={handleEditPlayer}
-          onAddNewPlayer={handleAddNewPlayer} 
-          isReadOnly={match.isClosed}
-        />
-        <MatchNotes isReadOnly={match.isClosed} />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+            <InteractiveField onPlayerClick={handleSelectPlayerFromField} isReadOnly={match.isClosed} />
+        </div>
+        <div className="lg:col-span-1">
+            <PlayerList 
+            players={players} 
+            onPlayerUpdate={handlePlayerUpdate}
+            onEditPlayer={handleEditPlayer}
+            onAddNewPlayer={handleAddNewPlayer} 
+            isReadOnly={match.isClosed}
+            />
+        </div>
+        <div className="lg:col-span-3">
+            <MatchNotes isReadOnly={match.isClosed} />
+        </div>
         
         {!match.isClosed && (
-            <div className="mt-4 flex justify-end">
+            <div className="mt-4 flex justify-end lg:col-span-3">
                 <AlertDialog>
                     <AlertDialogTrigger asChild>
                         <Button variant="destructive">
