@@ -35,12 +35,6 @@ const SoccerFieldSVG = () => (
         <rect x="248.5" y="995" width="183" height="55" stroke="white" strokeWidth="2" fill="none" />
         <circle cx="340" cy="935" r="3" fill="white" />
         <path d="M 248.5 885 A 91.5 91.5 0 0 1 431.5 885" stroke="white" strokeWidth="2" fill="none" />
-
-        {/* Corner arcs */}
-        <path d="M 0 25 A 25 25 0 0 1 25 0" stroke="white" strokeWidth="2" fill="none" />
-        <path d="M 680 25 A 25 25 0 0 0 655 0" stroke="white" strokeWidth="2" fill="none" />
-        <path d="M 0 1025 A 25 25 0 0 0 25 1050" stroke="white" strokeWidth="2" fill="none" />
-        <path d="M 680 1025 A 25 25 0 0 1 655 1050" stroke="white" strokeWidth="2" fill="none" />
     </svg>
 );
 
