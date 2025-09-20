@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Wand2 } from 'lucide-react';
-import type { TacticalElement, Formation, Player } from '@/lib/types';
+import type { TacticalElement, Formation } from '@/lib/types';
 import { formations } from '@/lib/types';
 import { getPlayerPositions } from '@/lib/formations';
 import { summarizeTacticalPositioning } from '@/ai/flows/summarize-tactical-positioning';
@@ -30,22 +30,21 @@ const SoccerFieldSVG = () => (
         <rect x="138.5" y="0" width="403" height="165" stroke="white" strokeWidth="2" fill="none" />
         <rect x="248.5" y="0" width="183" height="55" stroke="white" strokeWidth="2" fill="none" />
         <circle cx="340" cy="115" r="3" fill="white" />
-        <path d="M 248.5 165 A 91.5 91.5 0 0 0 431.5 165" stroke="white" strokeWidth="2" fill="none" />
+        <path d="M 248.5 165 A 91.5 91.5 0 0 1 431.5 165" stroke="white" strokeWidth="2" fill="none" />
 
         {/* Bottom penalty area */}
         <rect x="138.5" y="885" width="403" height="165" stroke="white" strokeWidth="2" fill="none" />
         <rect x="248.5" y="995" width="183" height="55" stroke="white" strokeWidth="2" fill="none" />
         <circle cx="340" cy="935" r="3" fill="white" />
-        <path d="M 248.5 885 A 91.5 91.5 0 0 1 431.5 885" stroke="white" strokeWidth="2" fill="none" />
+        <path d="M 248.5 885 A 91.5 91.5 0 0 0 431.5 885" stroke="white" strokeWidth="2" fill="none" />
     </svg>
 );
 
 interface InteractiveFieldProps {
-    players: Player[];
-    onPlayerClick: (player: Player) => void;
+    onPlayerClick: (player: {id: string, name: string, team: 'home' | 'away'}) => void;
 }
 
-export default function InteractiveField({ players, onPlayerClick }: InteractiveFieldProps) {
+export default function InteractiveField({ onPlayerClick }: InteractiveFieldProps) {
   const [homeFormation, setHomeFormation] = useState<Formation>('4-4-2');
   const [awayFormation, setAwayFormation] = useState<Formation>('4-3-3');
   const fieldRef = useRef<HTMLDivElement>(null);
@@ -64,13 +63,8 @@ export default function InteractiveField({ players, onPlayerClick }: Interactive
   useEffect(() => {
     const homePlayers = getPlayerPositions(homeFormation, 'home');
     const awayPlayers = getPlayerPositions(awayFormation, 'away');
-    
-    // Map tactical elements to actual players (first 11 for home, next 11 for away)
-    const homeElements = homePlayers.map((el, i) => ({ ...el, playerId: players[i]?.id }));
-    const awayElements = awayPlayers.map((el, i) => ({ ...el, playerId: players[i + 11]?.id }));
-
-    setElements([...homeElements, ...awayElements]);
-  }, [homeFormation, awayFormation, players]);
+    setElements([...homePlayers, ...awayPlayers]);
+  }, [homeFormation, awayFormation]);
   
   const handleSummarize = async () => {
     setIsSummarizing(true);
@@ -129,17 +123,18 @@ export default function InteractiveField({ players, onPlayerClick }: Interactive
     }
   };
 
-  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>, playerId?: string) => {
-    if(draggedElementId){
-      e.currentTarget.releasePointerCapture(e.pointerId);
-      setDraggedElementId(null);
-    }
-
-    if (!isDragging && playerId) {
-        const player = players.find(p => p.id === playerId);
-        if (player) {
-            onPlayerClick(player);
+  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (draggedElementId) {
+        e.currentTarget.releasePointerCapture(e.pointerId);
+        
+        if (!isDragging) {
+            const el = elements.find(elem => elem.id === draggedElementId);
+            if (el) {
+                onPlayerClick({ id: el.id, name: el.label, team: el.id.startsWith('H') ? 'home' : 'away' });
+            }
         }
+        
+        setDraggedElementId(null);
     }
     setIsDragging(false);
   };
@@ -190,7 +185,7 @@ export default function InteractiveField({ players, onPlayerClick }: Interactive
             <div
                 key={el.id}
                 onPointerDown={(e) => handlePointerDown(e, el.id)}
-                onPointerUp={(e) => handlePointerUp(e, el.playerId)}
+                onPointerUp={handlePointerUp}
                 onPointerLeave={(e) => { 
                     if (draggedElementId) {
                         e.currentTarget.releasePointerCapture(e.pointerId);

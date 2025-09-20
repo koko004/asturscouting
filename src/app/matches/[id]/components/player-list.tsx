@@ -3,7 +3,7 @@
 import type { Player } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Edit, Trash2, Users } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import {
   AlertDialog,
@@ -22,10 +22,10 @@ interface PlayerListProps {
   players: Player[];
   onPlayerUpdate: (players: Player[]) => void;
   onEditPlayer: (player: Player) => void;
-  onAddNewPlayer: () => void;
+  onAddNewPlayer: () => void; // This is kept for now, but the button is removed.
 }
 
-export default function PlayerList({ players, onPlayerUpdate, onEditPlayer, onAddNewPlayer }: PlayerListProps) {
+export default function PlayerList({ players, onPlayerUpdate, onEditPlayer }: PlayerListProps) {
   
   const handleDelete = (playerId: string) => {
     onPlayerUpdate(players.filter((p) => p.id !== playerId));
@@ -36,9 +36,7 @@ export default function PlayerList({ players, onPlayerUpdate, onEditPlayer, onAd
       <Card className="h-full">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Player Evaluation</CardTitle>
-          <Button size="sm" onClick={onAddNewPlayer}>
-            <Plus className="mr-2 h-4 w-4" /> Add Player
-          </Button>
+          {/* "Add Player" button is removed as per the new flow */}
         </CardHeader>
         <CardContent>
           <ScrollArea className="h-[calc(100vh-16rem)]">
@@ -83,9 +81,10 @@ export default function PlayerList({ players, onPlayerUpdate, onEditPlayer, onAd
                 </Card>
               ))}
               {players.length === 0 && (
-                <div className="py-10 text-center text-sm text-muted-foreground">
-                    <p>No players added yet.</p>
-                    <p>Click "Add Player" to start evaluating.</p>
+                <div className="flex h-[calc(100vh-20rem)] flex-col items-center justify-center text-center text-sm text-muted-foreground">
+                    <Users className="h-12 w-12 text-muted-foreground/50" />
+                    <p className="mt-4 font-semibold">No players evaluated yet.</p>
+                    <p className="mt-1">Tap on a player on the field to start a report.</p>
                 </div>
               )}
             </div>
