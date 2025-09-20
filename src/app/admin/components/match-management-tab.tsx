@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
@@ -8,12 +8,24 @@ import type { Match, Team } from '@/lib/admin-types';
 import { matches as initialMatches, users } from '@/lib/admin-data';
 import MatchTable from './match-table';
 import MatchForm from './match-form';
-
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 export default function MatchManagementTab() {
   const [matches, setMatches] = useState<Match[]>(initialMatches);
   const [isMatchFormOpen, setMatchFormOpen] = useState(false);
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
+  const [competitionFilter, setCompetitionFilter] = useState('all');
+  
+  const competitions = useMemo(() => {
+    const allCompetitions = initialMatches.map(m => m.competition);
+    return ['all', ...Array.from(new Set(allCompetitions))];
+  }, [initialMatches]);
 
   const handleSaveMatch = (matchData: Omit<Match, 'id'>) => {
     if (selectedMatch) {
@@ -47,6 +59,13 @@ export default function MatchManagementTab() {
     setMatches(matches.map(m => m.id === matchId ? { ...m, isClosed: !m.isClosed } : m));
   };
 
+  const filteredMatches = useMemo(() => {
+    if (competitionFilter === 'all') {
+      return matches;
+    }
+    return matches.filter(m => m.competition === competitionFilter);
+  }, [matches, competitionFilter]);
+
   return (
     <>
       <Card>
@@ -56,15 +75,29 @@ export default function MatchManagementTab() {
               <CardTitle>Partidos</CardTitle>
               <CardDescription>Añade, edita y asigna partidos a los ojeadores.</CardDescription>
             </div>
-            <Button onClick={handleAddNewMatch}>
-              <PlusCircle />
-              Añadir Partido
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-2">
+                <Select value={competitionFilter} onValueChange={setCompetitionFilter}>
+                  <SelectTrigger className="w-full sm:w-[200px]">
+                    <SelectValue placeholder="Filtrar por competición" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {competitions.map(comp => (
+                      <SelectItem key={comp} value={comp}>
+                        {comp === 'all' ? 'Todas las competiciones' : comp}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button onClick={handleAddNewMatch} className="w-full">
+                  <PlusCircle />
+                  Añadir Partido
+                </Button>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
           <MatchTable
-            matches={matches}
+            matches={filteredMatches}
             users={users}
             onEdit={handleEditMatch}
             onDelete={handleDeleteMatch}
