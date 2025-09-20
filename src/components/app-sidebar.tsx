@@ -11,11 +11,11 @@ import {
   TooltipContent,
 } from '@/components/ui/tooltip';
 
-const navItems = [
+export const navItems = [
   { href: '/', label: 'Dashboard', icon: Home },
-  { href: '/my-reports', label: 'My Reports', icon: ClipboardCheck },
+  { href: '/my-reports', label: 'Mis Informes', icon: ClipboardCheck },
   { href: '/admin', label: 'Admin', icon: Shield },
-  { href: '/settings', label: 'Settings', icon: Settings },
+  { href: '/settings', label: 'Ajustes', icon: Settings },
 ];
 
 export default function AppSidebar() {

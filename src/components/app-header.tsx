@@ -11,14 +11,56 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from '@/components/ui/sheet';
+import { Menu, Home, ClipboardCheck, Shield, Settings } from 'lucide-react';
+import { navItems } from './app-sidebar';
+
 
 export default function AppHeader() {
   return (
     <header className="sticky top-0 z-50 flex h-16 items-center border-b bg-background/80 px-4 backdrop-blur-sm md:px-8">
-      <Link href="/" className="flex items-center gap-2">
-        <Logo className="h-6 w-6 text-primary" />
-        <h1 className="font-headline text-lg font-bold">AsturScouting</h1>
-      </Link>
+       <div className="flex items-center gap-4">
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button
+              variant="outline"
+              size="icon"
+              className="shrink-0 md:hidden"
+            >
+              <Menu className="h-5 w-5" />
+              <span className="sr-only">Toggle navigation menu</span>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left">
+            <nav className="grid gap-6 text-lg font-medium">
+              <Link
+                href="/"
+                className="flex items-center gap-2 text-lg font-semibold"
+              >
+                <Logo className="h-6 w-6 text-primary" />
+                <span className="sr-only">AsturScouting</span>
+              </Link>
+              {navItems.map(item => (
+                 <Link
+                    key={item.href}
+                    href={item.href}
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    {item.label}
+                  </Link>
+              ))}
+            </nav>
+          </SheetContent>
+        </Sheet>
+        <Link href="/" className="flex items-center gap-2">
+          <Logo className="h-6 w-6 text-primary" />
+          <h1 className="hidden font-headline text-lg font-bold md:block">AsturScouting</h1>
+        </Link>
+       </div>
       <div className="ml-auto">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
