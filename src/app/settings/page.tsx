@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useToast }s/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { Upload, Save } from 'lucide-react';
 
 export default function SettingsPage() {
