@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MoreHorizontal, Lock, Unlock } from 'lucide-react';
+import { MoreHorizontal } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,6 +31,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { cn } from '@/lib/utils';
 
 
 interface MatchTableProps {
@@ -76,7 +77,15 @@ export default function MatchTable({ matches, users, onEdit, onDelete, onToggleS
                 {getScoutName(match.assignedScoutId)}
             </TableCell>
             <TableCell>
-              <Badge variant={match.isClosed ? 'secondary' : 'default'}>
+            <Badge
+                onClick={() => onToggleStatus(match.id)}
+                className={cn(
+                  'cursor-pointer',
+                  match.isClosed
+                    ? 'bg-red-600 hover:bg-red-700 text-white'
+                    : 'bg-green-600 hover:bg-green-700 text-white'
+                )}
+              >
                 {match.isClosed ? 'Cerrado' : 'Abierto'}
               </Badge>
             </TableCell>
@@ -93,9 +102,6 @@ export default function MatchTable({ matches, users, onEdit, onDelete, onToggleS
                     <DropdownMenuLabel>Acciones</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => onEdit(match)}>Editar</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => onToggleStatus(match.id)}>
-                      {match.isClosed ? <><Unlock className="mr-2 h-4 w-4" /> Reabrir Informe</> : <><Lock className="mr-2 h-4 w-4" /> Cerrar Informe</>}
-                    </DropdownMenuItem>
                     <AlertDialogTrigger asChild>
                       <DropdownMenuItem className="text-destructive focus:text-destructive">
                         Eliminar
