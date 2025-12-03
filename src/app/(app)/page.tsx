@@ -11,9 +11,33 @@ import PageHeader from '@/components/page-header';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PlayerReportForm from './players/[id]/components/player-report-form';
 import type { PlayerReport, Player } from '@/lib/admin-types';
+
+const ClientFormattedDate = ({ date }: { date: string }) => {
+  const [formattedDate, setFormattedDate] = useState('');
+
+  useEffect(() => {
+    setFormattedDate(
+      new Date(date).toLocaleString('es-ES', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+      })
+    );
+  }, [date]);
+
+  // Render a placeholder or nothing until the client-side formatting is done
+  if (!formattedDate) {
+    return null; // Or a loading skeleton
+  }
+
+  return <span>{formattedDate}</span>;
+};
+
 
 export default function DashboardPage() {
   // In a real app, this would come from an auth context
@@ -135,7 +159,7 @@ export default function DashboardPage() {
                     </div>
                   </div>
                   <div className="flex items-center justify-between text-sm text-muted-foreground">
-                    <span>{new Date(match.date).toLocaleString('es-ES', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span>
+                    <ClientFormattedDate date={match.date} />
                     <Button asChild variant="ghost" size="sm">
                       <Link href={`/matches/${match.id}`}>
                         {match.isClosed ? 'Ver Informe' : 'Iniciar Informe'}
