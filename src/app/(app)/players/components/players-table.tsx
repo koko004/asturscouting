@@ -85,7 +85,7 @@ export default function PlayersTable({ reports, players, matches, users, isAdmin
     <div>
       <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
         <Input
-          placeholder="Filtrar por equipo..."
+          placeholder="Filtrar por club..."
           value={filterTeam}
           onChange={(e) => setFilterTeam(e.target.value)}
           className="sm:w-[200px]"
@@ -116,7 +116,7 @@ export default function PlayersTable({ reports, players, matches, users, isAdmin
         <TableHeader>
           <TableRow>
             <TableHead>Jugador</TableHead>
-            <TableHead>Equipo</TableHead>
+            <TableHead>Club</TableHead>
             <TableHead>Última Valoración</TableHead>
             {isAdmin && <TableHead>Ojeador</TableHead>}
             <TableHead className="text-right">Acciones</TableHead>

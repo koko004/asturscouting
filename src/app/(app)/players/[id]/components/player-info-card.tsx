@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { Player } from '@/lib/admin-types';
@@ -39,7 +40,7 @@ export default function PlayerInfoCard({ player }: PlayerInfoCardProps) {
             </InfoItem>
             <InfoItem label="Edad" value={`${player.age} años`} />
             <InfoItem label="Posición" value={player.position} />
-            <InfoItem label="Equipo">
+            <InfoItem label="Club">
                  <div className="flex items-center gap-2">
                     <Image
                         src={player.teamLogoUrl || 'https://picsum.photos/seed/team-generic/40'}

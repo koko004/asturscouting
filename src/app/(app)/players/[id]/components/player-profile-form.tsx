@@ -40,7 +40,7 @@ const formSchema = z.object({
   lastName: z.string().min(2, 'El apellido debe tener al menos 2 caracteres.'),
   nationality: z.string().min(2, 'La nacionalidad debe tener al menos 2 caracteres.'),
   age: z.coerce.number().int().min(14, 'La edad debe ser al menos 14.'),
-  teamName: z.string().min(2, 'El nombre del equipo es obligatorio.'),
+  teamName: z.string().min(2, 'El nombre del club es obligatorio.'),
   position: z.enum(playerPositions),
   jerseyNumber: z.coerce.number().int().min(1, 'El dorsal debe ser al menos 1.'),
   height: z.coerce.number().int().min(100, 'La altura no es válida.'),
@@ -133,7 +133,7 @@ export default function PlayerProfileForm({
             </div>
             <div className="grid grid-cols-2 gap-4">
                 <FormField control={form.control} name="teamName" render={({ field }) => (
-                    <FormItem><FormLabel>Equipo Actual</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                    <FormItem><FormLabel>Club Actual</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
                 )}/>
                 <FormField control={form.control} name="jerseyNumber" render={({ field }) => (
                     <FormItem><FormLabel>Dorsal</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>

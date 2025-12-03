@@ -103,7 +103,7 @@ export default function PlayerReportsTable({ reports, players, matches, users }:
           </SelectContent>
         </Select>
         <Input
-          placeholder="Filtrar por equipo..."
+          placeholder="Filtrar por club..."
           value={filterTeam}
           onChange={(e) => setFilterTeam(e.target.value)}
           className="sm:w-[200px]"
