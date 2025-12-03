@@ -1,6 +1,7 @@
 'use client';
 
 import type { Match, User } from '@/lib/admin-types';
+import Link from 'next/link';
 import {
   Table,
   TableBody,
@@ -65,7 +66,11 @@ export default function MatchTable({ matches, users, onEdit, onDelete, onToggleS
         {matches.map(match => (
           <TableRow key={match.id}>
             <TableCell>
-              <div className="font-medium">{match.homeTeam.name} vs {match.awayTeam.name}</div>
+              <Button variant="link" asChild className="p-0 h-auto font-medium -translate-x-4">
+                  <Link href={`/matches/${match.id}`}>
+                    {match.homeTeam.name} vs {match.awayTeam.name}
+                  </Link>
+              </Button>
               <div className="text-sm text-muted-foreground">
                 {new Date(match.date).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}
               </div>
