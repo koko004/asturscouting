@@ -110,11 +110,7 @@ export default function MyReportsTable({ reports, matches, players }: MyReportsT
               </TableCell>
               <TableCell>{getMatchDescription(report.matchId)}</TableCell>
               <TableCell>
-                <div className="flex items-center">
-                  <Badge variant="default" className="flex items-center gap-1">
-                    {report.rating} <Star className="h-3 w-3" />
-                  </Badge>
-                </div>
+                <Badge variant="default">{report.rating}</Badge>
               </TableCell>
               <TableCell className="text-right">
                 <Dialog>

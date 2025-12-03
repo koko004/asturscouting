@@ -234,7 +234,7 @@ export default function PlayersTable({ reports, players, matches, users, isAdmin
                     Jugador <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             </TableHead>
-             <TableHead>
+             <TableHead className="text-center">
                 <Button variant="ghost" onClick={() => handleSort('age')}>
                     Edad <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
@@ -254,7 +254,7 @@ export default function PlayersTable({ reports, players, matches, users, isAdmin
                     Valoración <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             </TableHead>
-            <TableHead>
+            <TableHead className="text-center">
                 <Button variant="ghost" onClick={() => handleSort('rating')}>
                     Última Nota <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
@@ -279,19 +279,15 @@ export default function PlayersTable({ reports, players, matches, users, isAdmin
                         </Link>
                     </Button>
                 </TableCell>
-                <TableCell>{player.age}</TableCell>
+                <TableCell className="text-center">{player.age}</TableCell>
                 <TableCell>{player.position}</TableCell>
                 <TableCell>{player.teamName}</TableCell>
                 <TableCell>
                     <RecommendationBadge recommendation={player.recommendation} />
                 </TableCell>
-                <TableCell>
+                <TableCell className="text-center">
                     {report ? (
-                        <div className="flex items-center">
-                            <Badge variant="default" className="flex items-center gap-1">
-                                {report.rating} <Star className="h-3 w-3" />
-                            </Badge>
-                        </div>
+                        <Badge variant="default">{report.rating}</Badge>
                     ) : (
                         <Badge variant="outline">N/A</Badge>
                     )}
@@ -344,5 +340,3 @@ export default function PlayersTable({ reports, players, matches, users, isAdmin
     </div>
   );
 }
-
-    
