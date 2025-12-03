@@ -65,7 +65,13 @@ export const players: Player[] = [
         age: 22,
         teamName: 'UP Langreo',
         position: 'Delantero (DEL)',
-        jerseyNumber: 9
+        jerseyNumber: 9,
+        height: 185,
+        weight: 80,
+        preferredFoot: 'Right',
+        strengths: ['Juego aéreo', 'Definición'],
+        weaknesses: ['Velocidad'],
+        attributes: { attacking: 85, technical: 75, creativity: 70, defending: 40, tactical: 78 }
     },
     {
         id: 'p2',
@@ -75,7 +81,13 @@ export const players: Player[] = [
         age: 25,
         teamName: 'Marino de Luanco',
         position: 'Centrocampista (CEN)',
-        jerseyNumber: 8
+        jerseyNumber: 8,
+        height: 178,
+        weight: 72,
+        preferredFoot: 'Left',
+        strengths: ['Visión de juego', 'Pase'],
+        weaknesses: ['Fuerza física'],
+        attributes: { attacking: 72, technical: 88, creativity: 90, defending: 65, tactical: 85 }
     },
     {
         id: 'p3',
@@ -85,7 +97,13 @@ export const players: Player[] = [
         age: 28,
         teamName: 'Real Oviedo',
         position: 'Centrocampista (CEN)',
-        jerseyNumber: 10
+        jerseyNumber: 10,
+        height: 175,
+        weight: 68,
+        preferredFoot: 'Right',
+        strengths: ['Regate', 'Tiro lejano'],
+        weaknesses: ['Trabajo defensivo'],
+        attributes: { attacking: 80, technical: 85, creativity: 88, defending: 50, tactical: 75 }
     },
     {
         id: 'p4',
@@ -95,7 +113,13 @@ export const players: Player[] = [
         age: 30,
         teamName: 'Real Sporting',
         position: 'Delantero (DEL)',
-        jerseyNumber: 23
+        jerseyNumber: 23,
+        height: 181,
+        weight: 79,
+        preferredFoot: 'Both',
+        strengths: ['Lucha', 'Remate'],
+        weaknesses: [],
+        attributes: { attacking: 90, technical: 80, creativity: 75, defending: 45, tactical: 82 }
     }
 ];
 

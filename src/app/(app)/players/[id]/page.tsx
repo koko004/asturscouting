@@ -12,6 +12,9 @@ import { players as allPlayers, playerReports as allReports, matches as allMatch
 import { Edit } from 'lucide-react';
 import PlayerProfileForm from './components/player-profile-form';
 import type { Player } from '@/lib/admin-types';
+import PlayerAttributesChart from './components/player-attributes-chart';
+import PlayerStatsSummary from './components/player-stats-summary';
+import PlayerStrengthsWeaknesses from './components/player-strengths-weaknesses';
 
 
 export default function PlayerProfilePage() {
@@ -30,7 +33,7 @@ export default function PlayerProfilePage() {
     }, [playerId]);
 
     if (!player) {
-        return <div>Jugador no encontrado</div>;
+        return <div className="flex h-full items-center justify-center">Jugador no encontrado</div>;
     }
 
     const handleSavePlayer = (updatedPlayer: Player) => {
@@ -48,41 +51,40 @@ export default function PlayerProfilePage() {
     }
 
     return (
-        <div className="flex flex-col gap-8">
-            <PageHeader title={`${player.firstName} ${player.lastName}`}>
-                <Button onClick={() => setIsFormOpen(true)}>
-                    <Edit className="mr-2 h-4 w-4" />
-                    Editar Perfil
-                </Button>
-            </PageHeader>
+        <div className="flex flex-col gap-6">
+            <Card>
+                <CardContent className="pt-6">
+                    <div className="flex flex-col md:flex-row items-center gap-6">
+                        <Avatar className="h-28 w-28 border-4 border-background shadow-md">
+                            <AvatarImage src={`https://picsum.photos/seed/${player.id}/200`} data-ai-hint="person face" />
+                            <AvatarFallback>{player.firstName[0]}{player.lastName[0]}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1 text-center md:text-left">
+                            <PageHeader title={`${player.firstName} ${player.lastName}`} description={player.teamName} />
+                        </div>
+                        <Button onClick={() => setIsFormOpen(true)} size="sm">
+                            <Edit className="mr-2 h-4 w-4" />
+                            Editar Perfil
+                        </Button>
+                    </div>
+                </CardContent>
+            </Card>
 
             <Tabs defaultValue="summary">
-                <TabsList>
+                <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="summary">Resumen</TabsTrigger>
                     <TabsTrigger value="reports">Informes</TabsTrigger>
                 </TabsList>
                 <TabsContent value="summary" className="mt-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Perfil del Jugador</CardTitle>
-                        </CardHeader>
-                        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="flex items-center gap-4">
-                                <Avatar className="h-24 w-24">
-                                    <AvatarImage src={`https://picsum.photos/seed/${player.id}/200`} data-ai-hint="person face" />
-                                    <AvatarFallback>{player.firstName[0]}{player.lastName[0]}</AvatarFallback>
-                                </Avatar>
-                            </div>
-                            <div className="space-y-2 text-sm">
-                                <p><strong>Nombre:</strong> {player.firstName} {player.lastName}</p>
-                                <p><strong>Nacionalidad:</strong> {player.nationality}</p>
-                                <p><strong>Edad:</strong> {player.age}</p>
-                                <p><strong>Equipo:</strong> {player.teamName}</p>
-                                <p><strong>Posición:</strong> {player.position}</p>
-                                <p><strong>Dorsal:</strong> #{player.jerseyNumber}</p>
-                            </div>
-                        </CardContent>
-                    </Card>
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div className="lg:col-span-2 space-y-6">
+                           <PlayerAttributesChart attributes={player.attributes} />
+                        </div>
+                        <div className="lg:col-span-1 space-y-6">
+                            <PlayerStatsSummary player={player} />
+                            <PlayerStrengthsWeaknesses player={player} />
+                        </div>
+                    </div>
                 </TabsContent>
                 <TabsContent value="reports" className="mt-6">
                     <Card>
@@ -105,7 +107,7 @@ export default function PlayerProfilePage() {
                                 </Card>
                             ))}
                             {playerReports.length === 0 && (
-                                <p className="text-center text-muted-foreground">No hay informes para este jugador.</p>
+                                <p className="text-center text-muted-foreground py-8">No hay informes para este jugador.</p>
                             )}
                         </CardContent>
                     </Card>

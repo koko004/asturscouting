@@ -34,6 +34,18 @@ export type Player = {
     teamName: string;
     position: PlayerPosition;
     jerseyNumber: number;
+    height: number; // in cm
+    weight: number; // in kg
+    preferredFoot: 'Left' | 'Right' | 'Both';
+    strengths?: string[];
+    weaknesses?: string[];
+    attributes: {
+        attacking: number;
+        technical: number;
+        creativity: number;
+        defending: number;
+        tactical: number;
+    };
 };
 
 export type PlayerReport = {
