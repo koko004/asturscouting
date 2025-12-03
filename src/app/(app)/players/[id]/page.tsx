@@ -97,7 +97,7 @@ export default function PlayerProfilePage() {
                         <div className="lg:col-span-2 space-y-6">
                              <div className="flex flex-col sm:flex-row gap-6">
                                 <PlayerAttributesChart attributes={player.attributes} />
-                                <PlayerPositionMap position={player.position} />
+                                <PlayerPositionMap position={player.position} secondaryPosition={player.secondaryPosition} />
                             </div>
                         </div>
                         <div className="lg:col-span-1 space-y-6">

@@ -25,26 +25,42 @@ const positionCoordinates: Record<PlayerPosition, { top: string; left: string; s
 
 interface PlayerPositionMapProps {
   position: PlayerPosition;
+  secondaryPosition?: PlayerPosition;
 }
 
-export default function PlayerPositionMap({ position }: PlayerPositionMapProps) {
-  const pos = positionCoordinates[position] || positionCoordinates['Centrocampista (CEN)'];
+export default function PlayerPositionMap({ position, secondaryPosition }: PlayerPositionMapProps) {
+  const primaryPos = positionCoordinates[position] || positionCoordinates['Centrocampista (CEN)'];
+  const secondaryPos = secondaryPosition ? (positionCoordinates[secondaryPosition] || null) : null;
+
 
   return (
     <Card className="flex-1">
       <CardHeader>
-        <CardTitle>Posición Principal</CardTitle>
+        <CardTitle>Mapa de Posiciones</CardTitle>
       </CardHeader>
       <CardContent className="flex justify-center items-center">
         <div className="relative w-[150px] h-[220px]">
           <SoccerFieldSVG />
-          <Badge 
-            variant="default"
-            className="absolute -translate-x-1/2 -translate-y-1/2"
-            style={{ top: pos.top, left: pos.left }}
-          >
-            {pos.short}
-          </Badge>
+          {primaryPos && (
+            <Badge 
+                variant="default"
+                className="absolute -translate-x-1/2 -translate-y-1/2 z-10"
+                style={{ top: primaryPos.top, left: primaryPos.left }}
+                title={`Principal: ${position}`}
+            >
+                {primaryPos.short}
+            </Badge>
+          )}
+          {secondaryPos && secondaryPosition && (
+            <Badge 
+                variant="secondary"
+                className="absolute -translate-x-1/2 -translate-y-1/2"
+                style={{ top: secondaryPos.top, left: secondaryPos.left }}
+                title={`Secundaria: ${secondaryPosition}`}
+            >
+                {secondaryPos.short}
+            </Badge>
+          )}
         </div>
       </CardContent>
     </Card>
