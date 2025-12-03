@@ -1,9 +1,9 @@
-
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import type { PlayerPosition } from '@/lib/admin-types';
+import { cn } from '@/lib/utils';
 
 const SoccerFieldSVG = () => (
     <svg width="100%" height="100%" viewBox="0 0 150 220" preserveAspectRatio="xMidYMid meet">
@@ -53,8 +53,11 @@ export default function PlayerPositionMap({ position, secondaryPosition }: Playe
           )}
           {secondaryPos && secondaryPosition && (
             <Badge 
-                variant="secondary"
-                className="absolute -translate-x-1/2 -translate-y-1/2"
+                variant="outline"
+                className={cn(
+                    "absolute -translate-x-1/2 -translate-y-1/2 border-2",
+                    "bg-muted-foreground text-background"
+                )}
                 style={{ top: secondaryPos.top, left: secondaryPos.left }}
                 title={`Secundaria: ${secondaryPosition}`}
             >
