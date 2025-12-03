@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/tooltip';
 
 export const navItems = [
-  { href: '/', label: 'Informes de Partidos', icon: Home },
+  { href: '/', label: 'Dashboard', icon: Home },
   { href: '/my-reports', label: 'Mis Informes', icon: ClipboardCheck },
   { href: '/players', label: 'Jugadores', icon: Users },
   { href: '/admin', label: 'Admin', icon: Shield },

@@ -61,6 +61,7 @@ export type Player = {
         determination: number;
     };
     recommendation?: Recommendation;
+    assignedScoutId?: string;
 };
 
 export type PlayerReport = {

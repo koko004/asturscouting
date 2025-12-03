@@ -4,6 +4,7 @@ import MatchManagementTab from './components/match-management-tab';
 import UserManagementTab from './components/user-management-tab';
 import PlayerReportsTab from './components/player-reports-tab';
 import MatchReportsTab from './components/match-reports-tab';
+import PlayerManagementTab from './components/player-management-tab';
 
 export default function AdminPage() {
   return (
@@ -13,14 +14,18 @@ export default function AdminPage() {
         description="Gestiona partidos, usuarios y asignaciones de la aplicación."
       />
       <Tabs defaultValue="matches">
-        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4">
+        <TabsList className="grid w-full grid-cols-2 md:grid-cols-5">
           <TabsTrigger value="matches">Gestionar Partidos</TabsTrigger>
+          <TabsTrigger value="players">Gestionar Jugadores</TabsTrigger>
           <TabsTrigger value="users">Gestionar Usuarios</TabsTrigger>
           <TabsTrigger value="player-reports">Informes de Jugadores</TabsTrigger>
           <TabsTrigger value="match-reports">Informes de Partidos</TabsTrigger>
         </TabsList>
         <TabsContent value="matches" className="mt-6">
           <MatchManagementTab />
+        </TabsContent>
+        <TabsContent value="players" className="mt-6">
+          <PlayerManagementTab />
         </TabsContent>
         <TabsContent value="users" className="mt-6">
           <UserManagementTab />

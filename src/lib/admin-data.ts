@@ -75,6 +75,7 @@ export const players: Player[] = [
         attributes: { attacking: 85, technical: 75, tactical: 78, defending: 40, creativity: 70, physical: 88 },
         psychology: { leadership: 70, teamwork: 80, aggression: 75, determination: 85 },
         recommendation: 'Seleccionar',
+        assignedScoutId: 'u3',
     },
     {
         id: 'p2',
@@ -113,6 +114,7 @@ export const players: Player[] = [
         attributes: { attacking: 80, technical: 85, tactical: 75, defending: 50, creativity: 88, physical: 65 },
         psychology: { leadership: 75, teamwork: 70, aggression: 70, determination: 90 },
         recommendation: 'Seguimiento especial',
+        assignedScoutId: 'u2',
     },
     {
         id: 'p4',
@@ -132,6 +134,7 @@ export const players: Player[] = [
         attributes: { attacking: 90, technical: 80, tactical: 82, defending: 45, creativity: 75, physical: 85 },
         psychology: { leadership: 85, teamwork: 80, aggression: 90, determination: 95 },
         recommendation: 'Seleccionar',
+        assignedScoutId: 'u2',
     }
 ];
 

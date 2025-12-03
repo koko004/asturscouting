@@ -3,7 +3,7 @@
 
 import PageHeader from '@/components/page-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { matches as allMatches, playerReports as allPlayerReports, users, players as allPlayers } from '@/lib/admin-data';
+import { playerReports as allPlayerReports, users, players as allPlayers, matches as allMatches } from '@/lib/admin-data';
 import PlayersTable from './components/players-table';
 
 // For demo purposes, we'll hardcode the current user's ID.
