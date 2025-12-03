@@ -29,7 +29,6 @@ export default function PlayerProfilePage() {
     const playerId = typeof params.id === 'string' ? params.id : '';
 
     const [isProfileFormOpen, setProfileFormOpen] = useState(false);
-    const [isReportFormOpen, setReportFormOpen] = useState(false);
     
     const [player, setPlayer] = useState(allPlayers.find(p => p.id === playerId));
     const [playerReports, setPlayerReports] = useState(allReports.filter(r => r.playerId === playerId));
@@ -62,16 +61,6 @@ export default function PlayerProfilePage() {
         setPlayer(prev => prev ? { ...prev, ...updatedPlayer } : undefined);
         // Here you would also update the allPlayers array or send to a backend
     };
-    
-    const handleSaveReport = (report: Omit<PlayerReport, 'id' | 'playerId' | 'scoutId'>) => {
-        const newReport: PlayerReport = {
-            id: `pr${Date.now()}`,
-            playerId: player.id,
-            scoutId: 'u2', // In a real app, this would be the current user's ID
-            ...report,
-        };
-        setPlayerReports(prev => [...prev, newReport]);
-    };
 
     const getRecommendationBadge = (recommendation: Recommendation) => {
         const config = {
@@ -99,10 +88,6 @@ export default function PlayerProfilePage() {
             <Card>
                 <CardContent className="relative p-4 md:p-6">
                      <div className="absolute top-2 right-2 flex gap-1">
-                        <Button onClick={() => setReportFormOpen(true)} size="sm" variant="outline">
-                            <PlusCircle className="mr-2 h-4 w-4" />
-                            Crear Informe
-                        </Button>
                         <Button onClick={() => setProfileFormOpen(true)} size="icon" variant="ghost" className="h-8 w-8">
                             <Edit className="h-4 w-4" />
                             <span className="sr-only">Editar Perfil</span>
@@ -162,11 +147,6 @@ export default function PlayerProfilePage() {
                 onOpenChange={setProfileFormOpen}
                 player={player}
                 onSave={handleSavePlayer}
-            />
-            <PlayerReportForm
-                isOpen={isReportFormOpen}
-                onOpenChange={setReportFormOpen}
-                onSave={handleSaveReport}
             />
         </div>
     );
