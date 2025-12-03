@@ -122,93 +122,100 @@ export default function PlayerAttributesForm({ player, onSave }: PlayerAttribute
                 </CardContent>
             </Card>
 
-             <div className="space-y-6 lg:col-span-2">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Posiciones y Recomendación</CardTitle>
-                        <CardDescription>Define las posiciones y la recomendación final.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                        <FormField
-                            control={form.control}
-                            name="position"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Posición Principal</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                    <FormControl>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Selecciona una posición" />
-                                    </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                    {playerPositions.map((pos) => (
-                                        <SelectItem key={pos} value={pos}>
-                                        {pos}
-                                        </SelectItem>
-                                    ))}
-                                    </SelectContent>
-                                </Select>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="secondaryPosition"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Posición Secundaria</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                    <FormControl>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Selecciona una posición secundaria" />
-                                    </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                     <SelectItem value="none">Ninguna</SelectItem>
-                                    {playerPositions.map((pos) => (
-                                        <SelectItem key={pos} value={pos}>
-                                        {pos}
-                                        </SelectItem>
-                                    ))}
-                                    </SelectContent>
-                                </Select>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                         <FormField
-                            control={form.control}
-                            name="recommendation"
-                            render={({ field }) => (
-                                <FormItem className="space-y-3">
-                                <FormLabel>Recomendación Final</FormLabel>
+            <Card className="lg:col-span-1">
+                <CardHeader>
+                    <CardTitle>Posiciones</CardTitle>
+                    <CardDescription>Define las posiciones del jugador.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    <FormField
+                        control={form.control}
+                        name="position"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Posición Principal</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <FormControl>
-                                    <RadioGroup
-                                    onValueChange={field.onChange}
-                                    defaultValue={field.value}
-                                    className="flex flex-col space-y-1"
-                                    >
-                                    {recommendations.map(rec => (
-                                        <FormItem key={rec} className="flex items-center space-x-3 space-y-0">
-                                            <FormControl>
-                                                <RadioGroupItem value={rec} />
-                                            </FormControl>
-                                            <FormLabel className="font-normal">
-                                                {rec}
-                                            </FormLabel>
-                                        </FormItem>
-                                    ))}
-                                    </RadioGroup>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Selecciona una posición" />
+                                </SelectTrigger>
                                 </FormControl>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    </CardContent>
-                </Card>
-            </div>
+                                <SelectContent>
+                                {playerPositions.map((pos) => (
+                                    <SelectItem key={pos} value={pos}>
+                                    {pos}
+                                    </SelectItem>
+                                ))}
+                                </SelectContent>
+                            </Select>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="secondaryPosition"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Posición Secundaria</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Selecciona una posición secundaria" />
+                                </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                    <SelectItem value="none">Ninguna</SelectItem>
+                                {playerPositions.map((pos) => (
+                                    <SelectItem key={pos} value={pos}>
+                                    {pos}
+                                    </SelectItem>
+                                ))}
+                                </SelectContent>
+                            </Select>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </CardContent>
+            </Card>
+            <Card className="lg:col-span-1">
+                <CardHeader>
+                    <CardTitle>Recomendación Final</CardTitle>
+                    <CardDescription>Veredicto del ojeador.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <FormField
+                        control={form.control}
+                        name="recommendation"
+                        render={({ field }) => (
+                            <FormItem className="space-y-3">
+                            <FormLabel>Recomendación</FormLabel>
+                            <FormControl>
+                                <RadioGroup
+                                onValueChange={field.onChange}
+                                defaultValue={field.value}
+                                className="flex flex-col space-y-1"
+                                >
+                                {recommendations.map(rec => (
+                                    <FormItem key={rec} className="flex items-center space-x-3 space-y-0">
+                                        <FormControl>
+                                            <RadioGroupItem value={rec} />
+                                        </FormControl>
+                                        <FormLabel className="font-normal">
+                                            {rec}
+                                        </FormLabel>
+                                    </FormItem>
+                                ))}
+                                </RadioGroup>
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </CardContent>
+            </Card>
+            
             <Card className="lg:col-span-3">
                 <CardHeader>
                     <CardTitle>Personalidad y Psicología</CardTitle>
