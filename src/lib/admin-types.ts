@@ -39,6 +39,7 @@ export type Player = {
     teamName: string;
     teamLogoUrl?: string;
     position: PlayerPosition;
+    secondaryPosition?: PlayerPosition;
     jerseyNumber: number;
     height: number; // in cm
     weight: number; // in kg
@@ -51,7 +52,13 @@ export type Player = {
         tactical: number;
         defending: number;
         creativity: number;
-        physical: number; // Added this
+        physical: number;
+    };
+    psychology?: {
+        leadership: number;
+        teamwork: number;
+        aggression: number;
+        determination: number;
     };
     recommendation?: Recommendation;
 };

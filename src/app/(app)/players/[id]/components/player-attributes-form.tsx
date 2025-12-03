@@ -38,7 +38,14 @@ const formSchema = z.object({
     defending: z.number().min(0).max(100),
     creativity: z.number().min(0).max(100),
   }),
+  psychology: z.object({
+    leadership: z.number().min(0).max(100),
+    teamwork: z.number().min(0).max(100),
+    aggression: z.number().min(0).max(100),
+    determination: z.number().min(0).max(100),
+  }),
   position: z.enum(playerPositions),
+  secondaryPosition: z.enum(playerPositions).optional(),
   recommendation: z.enum(recommendations),
 });
 
@@ -56,7 +63,9 @@ export default function PlayerAttributesForm({ player, onSave }: PlayerAttribute
     resolver: zodResolver(formSchema),
     defaultValues: {
       attributes: player.attributes,
+      psychology: player.psychology || { leadership: 50, teamwork: 50, aggression: 50, determination: 50 },
       position: player.position,
+      secondaryPosition: player.secondaryPosition,
       recommendation: player.recommendation || 'Sin definir',
     },
   });
@@ -69,10 +78,10 @@ export default function PlayerAttributesForm({ player, onSave }: PlayerAttribute
     })
   };
 
-  const renderSlider = (name: keyof PlayerAttributesFormValues['attributes'], label: string) => (
+  const renderSlider = (name: keyof PlayerAttributesFormValues['attributes'] | `psychology.${keyof NonNullable<PlayerAttributesFormValues['psychology']>}`, label: string) => (
     <FormField
         control={form.control}
-        name={`attributes.${name}`}
+        name={name}
         render={({ field }) => (
         <FormItem>
             <div className="flex justify-between items-center">
@@ -84,7 +93,7 @@ export default function PlayerAttributesForm({ player, onSave }: PlayerAttribute
                 min={0}
                 max={100}
                 step={1}
-                defaultValue={[field.value]}
+                defaultValue={[field.value as number]}
                 onValueChange={(value) => field.onChange(value[0])}
             />
             </FormControl>
@@ -104,20 +113,20 @@ export default function PlayerAttributesForm({ player, onSave }: PlayerAttribute
                     <CardDescription>Valora los atributos clave del 1 al 100.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                    {renderSlider('technical', 'Aptitud Técnica')}
-                    {renderSlider('tactical', 'Aptitud Táctica')}
-                    {renderSlider('physical', 'Capacidad Física')}
-                    {renderSlider('attacking', 'Ataque')}
-                    {renderSlider('defending', 'Defensa')}
-                    {renderSlider('creativity', 'Creatividad')}
+                    {renderSlider('attributes.technical', 'Aptitud Técnica')}
+                    {renderSlider('attributes.tactical', 'Aptitud Táctica')}
+                    {renderSlider('attributes.physical', 'Capacidad Física')}
+                    {renderSlider('attributes.attacking', 'Ataque')}
+                    {renderSlider('attributes.defending', 'Defensa')}
+                    {renderSlider('attributes.creativity', 'Creatividad')}
                 </CardContent>
             </Card>
 
              <div className="space-y-6 lg:col-span-2">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Posición y Recomendación</CardTitle>
-                        <CardDescription>Define la posición principal y la recomendación final.</CardDescription>
+                        <CardTitle>Posiciones y Recomendación</CardTitle>
+                        <CardDescription>Define las posiciones y la recomendación final.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
                         <FormField
@@ -133,6 +142,31 @@ export default function PlayerAttributesForm({ player, onSave }: PlayerAttribute
                                     </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
+                                    {playerPositions.map((pos) => (
+                                        <SelectItem key={pos} value={pos}>
+                                        {pos}
+                                        </SelectItem>
+                                    ))}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="secondaryPosition"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Posición Secundaria</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Selecciona una posición secundaria" />
+                                    </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                     <SelectItem value="none">Ninguna</SelectItem>
                                     {playerPositions.map((pos) => (
                                         <SelectItem key={pos} value={pos}>
                                         {pos}
@@ -175,6 +209,18 @@ export default function PlayerAttributesForm({ player, onSave }: PlayerAttribute
                     </CardContent>
                 </Card>
             </div>
+            <Card className="lg:col-span-3">
+                <CardHeader>
+                    <CardTitle>Personalidad y Psicología</CardTitle>
+                    <CardDescription>Valora los atributos mentales y de actitud.</CardDescription>
+                </CardHeader>
+                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                    {renderSlider('psychology.leadership', 'Liderazgo')}
+                    {renderSlider('psychology.teamwork', 'Trabajo en Equipo')}
+                    {renderSlider('psychology.aggression', 'Agresividad')}
+                    {renderSlider('psychology.determination', 'Determinación')}
+                </CardContent>
+            </Card>
         </div>
 
         <div className="flex justify-end">
