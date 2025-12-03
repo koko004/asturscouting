@@ -10,6 +10,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { MoreHorizontal } from 'lucide-react';
@@ -38,26 +45,22 @@ import { cn } from '@/lib/utils';
 interface MatchTableProps {
   matches: Match[];
   users: User[];
+  scouts: User[];
   onEdit: (match: Match) => void;
   onDelete: (matchId: string) => void;
   onToggleStatus: (matchId: string) => void;
+  onAssignScout: (matchId: string, scoutId: string) => void;
 }
 
-export default function MatchTable({ matches, users, onEdit, onDelete, onToggleStatus }: MatchTableProps) {
+export default function MatchTable({ matches, users, scouts, onEdit, onDelete, onToggleStatus, onAssignScout }: MatchTableProps) {
   
-  const getScoutName = (scoutId: string | undefined) => {
-    if (!scoutId) return <Badge variant="outline">Sin asignar</Badge>;
-    const scout = users.find(u => u.id === scoutId);
-    return scout ? scout.name : <Badge variant="outline">Desconocido</Badge>;
-  }
-
   return (
     <Table>
       <TableHeader>
         <TableRow>
           <TableHead>Partido</TableHead>
           <TableHead>Competición</TableHead>
-          <TableHead>Ojeador Asignado</TableHead>
+          <TableHead className="w-[200px]">Ojeador Asignado</TableHead>
           <TableHead>Estado</TableHead>
           <TableHead className="text-right">Acciones</TableHead>
         </TableRow>
@@ -79,7 +82,20 @@ export default function MatchTable({ matches, users, onEdit, onDelete, onToggleS
               {match.competition}
             </TableCell>
             <TableCell>
-                {getScoutName(match.assignedScoutId)}
+                 <Select
+                    defaultValue={match.assignedScoutId || 'unassigned'}
+                    onValueChange={(scoutId) => onAssignScout(match.id, scoutId)}
+                >
+                    <SelectTrigger>
+                        <SelectValue placeholder="Asignar ojeador..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="unassigned">Sin asignar</SelectItem>
+                        {scouts.map(scout => (
+                            <SelectItem key={scout.id} value={scout.id}>{scout.name}</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
             </TableCell>
             <TableCell>
             <Badge

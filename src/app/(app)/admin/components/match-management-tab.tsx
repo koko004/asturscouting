@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
-import type { Match, Team } from '@/lib/admin-types';
+import type { Match, Team, User } from '@/lib/admin-types';
 import { matches as initialMatches, users } from '@/lib/admin-data';
 import MatchTable from './match-table';
 import MatchForm from './match-form';
@@ -59,12 +59,18 @@ export default function MatchManagementTab() {
     setMatches(matches.map(m => m.id === matchId ? { ...m, isClosed: !m.isClosed } : m));
   };
 
+  const handleAssignScout = (matchId: string, scoutId: string | 'unassigned') => {
+    setMatches(matches.map(m => m.id === matchId ? { ...m, assignedScoutId: scoutId === 'unassigned' ? undefined : scoutId } : m));
+  };
+
   const filteredMatches = useMemo(() => {
     if (competitionFilter === 'all') {
       return matches;
     }
     return matches.filter(m => m.competition === competitionFilter);
   }, [matches, competitionFilter]);
+
+  const scouts = users.filter((u: User) => u.role === 'scout');
 
   return (
     <>
@@ -99,9 +105,11 @@ export default function MatchManagementTab() {
           <MatchTable
             matches={filteredMatches}
             users={users}
+            scouts={scouts}
             onEdit={handleEditMatch}
             onDelete={handleDeleteMatch}
             onToggleStatus={handleToggleMatchStatus}
+            onAssignScout={handleAssignScout}
           />
         </CardContent>
       </Card>
