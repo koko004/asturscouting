@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Save, Move, ArrowUpRight, Eraser } from 'lucide-react';
+import { Save, Move, ArrowUpRight, Eraser, Undo2 } from 'lucide-react';
 import type { TacticalElement, Formation, Team } from '@/lib/types';
 import { formations } from '@/lib/types';
 import { getPlayerPositions } from '@/lib/formations';
@@ -166,6 +166,10 @@ export default function InteractiveField({ onPlayerClick, homeTeam, awayTeam, is
     setArrows([]);
   };
 
+  const undoLastArrow = () => {
+    setArrows(prev => prev.slice(0, -1));
+  };
+
   return (
     <>
     <Card className="h-full flex flex-col">
@@ -252,6 +256,9 @@ export default function InteractiveField({ onPlayerClick, homeTeam, awayTeam, is
                 </Button>
                 <Button variant={activeTool === 'arrow' ? 'secondary' : 'ghost'} size="icon" onClick={() => setActiveTool('arrow')} title="Dibujar Flecha">
                     <ArrowUpRight />
+                </Button>
+                <Button variant="ghost" size="icon" onClick={undoLastArrow} title="Deshacer último dibujo" disabled={arrows.length === 0}>
+                    <Undo2 />
                 </Button>
                  <Button variant="ghost" size="icon" onClick={clearDrawings} title="Limpiar Dibujos">
                     <Eraser className="text-destructive" />
