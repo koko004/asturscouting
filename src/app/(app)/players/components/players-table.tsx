@@ -234,11 +234,6 @@ export default function PlayersTable({ reports, players, matches, users, isAdmin
                     Jugador <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             </TableHead>
-            <TableHead>
-                <Button variant="ghost" onClick={() => handleSort('team')}>
-                    Club <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-            </TableHead>
              <TableHead>
                 <Button variant="ghost" onClick={() => handleSort('age')}>
                     Edad <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -247,6 +242,11 @@ export default function PlayersTable({ reports, players, matches, users, isAdmin
              <TableHead>
                 <Button variant="ghost" onClick={() => handleSort('position')}>
                     Posición <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            </TableHead>
+            <TableHead>
+                <Button variant="ghost" onClick={() => handleSort('team')}>
+                    Club <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             </TableHead>
             <TableHead>
@@ -279,9 +279,9 @@ export default function PlayersTable({ reports, players, matches, users, isAdmin
                         </Link>
                     </Button>
                 </TableCell>
-                <TableCell>{player.teamName}</TableCell>
                 <TableCell>{player.age}</TableCell>
                 <TableCell>{player.position}</TableCell>
+                <TableCell>{player.teamName}</TableCell>
                 <TableCell>
                     <RecommendationBadge recommendation={player.recommendation} />
                 </TableCell>
