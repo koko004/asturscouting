@@ -2,7 +2,8 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import type { PlayerReport, Match, User, Player, Recommendation } from '@/lib/admin-types';
+import type { PlayerReport, Match, User, Player, Recommendation, PlayerPosition } from '@/lib/admin-types';
+import { playerPositions } from '@/lib/admin-types';
 import Link from 'next/link';
 import {
   Table,
@@ -33,7 +34,7 @@ import {
 } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 
-type SortKey = 'player' | 'team' | 'rating' | 'scout' | 'recommendation';
+type SortKey = 'player' | 'team' | 'rating' | 'scout' | 'recommendation' | 'age' | 'position';
 
 
 const RecommendationBadge = ({ recommendation }: { recommendation?: Recommendation }) => {
@@ -75,6 +76,8 @@ export default function PlayersTable({ reports, players, matches, users, isAdmin
   const [filterTeam, setFilterTeam] = useState('');
   const [filterPlayer, setFilterPlayer] = useState('');
   const [filterScout, setFilterScout] = useState('all');
+  const [filterAge, setFilterAge] = useState('');
+  const [filterPosition, setFilterPosition] = useState('all');
   const [sortKey, setSortKey] = useState<SortKey>('player');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
@@ -118,7 +121,10 @@ export default function PlayersTable({ reports, players, matches, users, isAdmin
         const teamFilterPassed = !filterTeam || player.teamName.toLowerCase().includes(filterTeam.toLowerCase());
         const playerFilterPassed = !filterPlayer || `${player.firstName} ${player.lastName}`.toLowerCase().includes(filterPlayer.toLowerCase());
         const scoutFilterPassed = !isAdmin || filterScout === 'all' || (player.latestReport && player.latestReport.scoutId === filterScout);
-        return teamFilterPassed && playerFilterPassed && scoutFilterPassed;
+        const ageFilterPassed = !filterAge || player.age.toString() === filterAge;
+        const positionFilterPassed = filterPosition === 'all' || player.position === filterPosition;
+
+        return teamFilterPassed && playerFilterPassed && scoutFilterPassed && ageFilterPassed && positionFilterPassed;
     });
 
     return playersToFilter.sort((a, b) => {
@@ -141,6 +147,14 @@ export default function PlayersTable({ reports, players, matches, users, isAdmin
                 compareA = a.recommendation || '';
                 compareB = b.recommendation || '';
                 break;
+            case 'age':
+                compareA = a.age;
+                compareB = b.age;
+                break;
+            case 'position':
+                compareA = a.position;
+                compareB = b.position;
+                break;
             case 'player':
             default:
                 compareA = `${a.firstName} ${a.lastName}`;
@@ -152,7 +166,7 @@ export default function PlayersTable({ reports, players, matches, users, isAdmin
         if (compareA > compareB) return sortDirection === 'asc' ? 1 : -1;
         return 0;
     });
-  }, [processedPlayers, filterTeam, filterPlayer, filterScout, isAdmin, sortKey, sortDirection]);
+  }, [processedPlayers, filterTeam, filterPlayer, filterScout, filterAge, filterPosition, isAdmin, sortKey, sortDirection]);
 
   const handleSort = (key: SortKey) => {
     if (sortKey === key) {
@@ -170,17 +184,35 @@ export default function PlayersTable({ reports, players, matches, users, isAdmin
           placeholder="Filtrar por club..."
           value={filterTeam}
           onChange={(e) => setFilterTeam(e.target.value)}
-          className="sm:w-[200px]"
+          className="sm:w-[180px]"
         />
         <Input
           placeholder="Filtrar por jugador..."
           value={filterPlayer}
           onChange={(e) => setFilterPlayer(e.target.value)}
-          className="sm:w-[200px]"
+          className="sm:w-[180px]"
         />
+        <Input
+            type="number"
+            placeholder="Filtrar por edad..."
+            value={filterAge}
+            onChange={(e) => setFilterAge(e.target.value)}
+            className="sm:w-[150px]"
+        />
+        <Select value={filterPosition} onValueChange={setFilterPosition}>
+            <SelectTrigger className="sm:w-[180px]">
+                <SelectValue placeholder="Filtrar por posición" />
+            </SelectTrigger>
+            <SelectContent>
+                <SelectItem value="all">Todas las posiciones</SelectItem>
+                {playerPositions.map(pos => (
+                    <SelectItem key={pos} value={pos}>{pos}</SelectItem>
+                ))}
+            </SelectContent>
+        </Select>
         {isAdmin && (
             <Select value={filterScout} onValueChange={setFilterScout}>
-                <SelectTrigger className="sm:w-[200px]">
+                <SelectTrigger className="sm:w-[180px]">
                     <SelectValue placeholder="Filtrar por ojeador" />
                 </SelectTrigger>
                 <SelectContent>
@@ -205,6 +237,16 @@ export default function PlayersTable({ reports, players, matches, users, isAdmin
             <TableHead>
                 <Button variant="ghost" onClick={() => handleSort('team')}>
                     Club <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            </TableHead>
+             <TableHead>
+                <Button variant="ghost" onClick={() => handleSort('age')}>
+                    Edad <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            </TableHead>
+             <TableHead>
+                <Button variant="ghost" onClick={() => handleSort('position')}>
+                    Posición <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             </TableHead>
             <TableHead>
@@ -238,6 +280,8 @@ export default function PlayersTable({ reports, players, matches, users, isAdmin
                     </Button>
                 </TableCell>
                 <TableCell>{player.teamName}</TableCell>
+                <TableCell>{player.age}</TableCell>
+                <TableCell>{player.position}</TableCell>
                 <TableCell>
                     <RecommendationBadge recommendation={player.recommendation} />
                 </TableCell>
@@ -290,7 +334,7 @@ export default function PlayersTable({ reports, players, matches, users, isAdmin
           })}
           {filteredPlayers.length === 0 && (
             <TableRow>
-              <TableCell colSpan={isAdmin ? 6 : 5} className="h-24 text-center">
+              <TableCell colSpan={isAdmin ? 8 : 7} className="h-24 text-center">
                 No se encontraron jugadores con los filtros actuales.
               </TableCell>
             </TableRow>
@@ -300,3 +344,5 @@ export default function PlayersTable({ reports, players, matches, users, isAdmin
     </div>
   );
 }
+
+    
