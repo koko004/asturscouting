@@ -6,6 +6,7 @@ import PageHeader from '@/components/page-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import Image from 'next/image';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { players as allPlayers, playerReports as allReports, matches as allMatches, users } from '@/lib/admin-data';
 import { Edit } from 'lucide-react';
@@ -63,10 +64,14 @@ export default function PlayerProfilePage() {
             <Card>
                 <CardContent className="pt-6">
                     <div className="flex flex-col md:flex-row items-center gap-6">
-                        <Avatar className="h-28 w-28 border-4 border-background shadow-md">
-                            <AvatarImage src={`https://picsum.photos/seed/${player.id}/200`} data-ai-hint="person face" />
-                            <AvatarFallback>{player.firstName[0]}{player.lastName[0]}</AvatarFallback>
-                        </Avatar>
+                        <Image
+                            src={`https://picsum.photos/seed/${player.id}/200/280`}
+                            alt={`Foto de ${player.firstName} ${player.lastName}`}
+                            width={140}
+                            height={200}
+                            className="h-auto w-36 rounded-md object-cover shadow-md"
+                            data-ai-hint="person face"
+                        />
                         <div className="flex-1 text-center md:text-left">
                             <PageHeader title={`${player.firstName} ${player.lastName}`} />
                             <PlayerInfoCard player={player} averageRating={averageRating} />
