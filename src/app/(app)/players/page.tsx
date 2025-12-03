@@ -3,7 +3,7 @@
 
 import PageHeader from '@/components/page-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { matches as allMatches, playerReports as allPlayerReports, users } from '@/lib/admin-data';
+import { matches as allMatches, playerReports as allPlayerReports, users, players as allPlayers } from '@/lib/admin-data';
 import PlayersTable from './components/players-table';
 
 // For demo purposes, we'll hardcode the current user's ID.
@@ -19,15 +19,6 @@ export default function PlayersPage() {
     const visibleReports = isAdmin 
         ? allPlayerReports 
         : allPlayerReports.filter(report => report.scoutId === CURRENT_USER_ID);
-    
-    const uniquePlayers = Array.from(new Set(visibleReports.map(report => report.playerId)))
-        .map(playerId => {
-            // Get the latest report for each player
-            return visibleReports
-                .filter(report => report.playerId === playerId)
-                .sort((a, b) => new Date(b.id).getTime() - new Date(a.id).getTime())[0];
-        });
-
 
     return (
         <div className="flex flex-col gap-8">
@@ -47,7 +38,8 @@ export default function PlayersPage() {
                 </CardHeader>
                 <CardContent>
                     <PlayersTable 
-                        reports={uniquePlayers} 
+                        reports={visibleReports} 
+                        players={allPlayers}
                         matches={allMatches} 
                         users={users}
                         isAdmin={isAdmin}
@@ -57,4 +49,3 @@ export default function PlayersPage() {
         </div>
     );
 }
-

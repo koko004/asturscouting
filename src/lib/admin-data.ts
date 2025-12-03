@@ -1,4 +1,4 @@
-import type { User, Match, PlayerReport } from './admin-types';
+import type { User, Match, PlayerReport, Player } from './admin-types';
 
 export const users: User[] = [
     {
@@ -56,15 +56,56 @@ export const matches: Match[] = [
   },
 ];
 
+export const players: Player[] = [
+    {
+        id: 'p1',
+        firstName: 'David',
+        lastName: 'Gold',
+        nationality: 'Inglaterra',
+        age: 22,
+        teamName: 'UP Langreo',
+        position: 'Delantero (DEL)',
+        jerseyNumber: 9
+    },
+    {
+        id: 'p2',
+        firstName: 'Juan',
+        lastName: 'Pérez',
+        nationality: 'España',
+        age: 25,
+        teamName: 'Marino de Luanco',
+        position: 'Centrocampista (CEN)',
+        jerseyNumber: 8
+    },
+    {
+        id: 'p3',
+        firstName: 'Borja',
+        lastName: 'Sánchez',
+        nationality: 'España',
+        age: 28,
+        teamName: 'Real Oviedo',
+        position: 'Centrocampista (CEN)',
+        jerseyNumber: 10
+    },
+    {
+        id: 'p4',
+        firstName: 'Uros',
+        lastName: 'Djurdjevic',
+        nationality: 'Serbia',
+        age: 30,
+        teamName: 'Real Sporting',
+        position: 'Delantero (DEL)',
+        jerseyNumber: 23
+    }
+];
+
+
 export const playerReports: PlayerReport[] = [
     { 
         id: 'pr1',
         playerId: 'p1',
         matchId: 'm2',
         scoutId: 'u3',
-        teamName: 'UP Langreo',
-        playerName: 'David Gold',
-        position: 'Delantero (DEL)',
         rating: 8,
         notes: 'Muy rápido y con gran definición. Buen juego aéreo.'
     },
@@ -73,9 +114,6 @@ export const playerReports: PlayerReport[] = [
         playerId: 'p2',
         matchId: 'm2',
         scoutId: 'u3',
-        teamName: 'Marino de Luanco',
-        playerName: 'Juan Pérez',
-        position: 'Centrocampista (CEN)',
         rating: 7,
         notes: 'Gran visión de juego y pases precisos. Le falta algo de físico.'
     },
@@ -84,9 +122,6 @@ export const playerReports: PlayerReport[] = [
         playerId: 'p3',
         matchId: 'm1',
         scoutId: 'u2',
-        teamName: 'Real Oviedo',
-        playerName: 'Borja Sánchez',
-        position: 'Centrocampista (CEN)',
         rating: 9,
         notes: 'Jugador diferencial, con mucho talento y capacidad para desequilibrar. El mejor del partido.'
     },
@@ -95,9 +130,6 @@ export const playerReports: PlayerReport[] = [
         playerId: 'p4',
         matchId: 'm1',
         scoutId: 'u2',
-        teamName: 'Real Sporting',
-        playerName: 'Uros Djurdjevic',
-        position: 'Delantero (DEL)',
         rating: 8,
         notes: 'Delantero muy completo. Buen remate con ambas piernas y gran capacidad de lucha.'
     }

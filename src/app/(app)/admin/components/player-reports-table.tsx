@@ -1,7 +1,8 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
-import type { PlayerReport, Match, User } from '@/lib/admin-types';
+import type { PlayerReport, Match, User, Player } from '@/lib/admin-types';
 import {
   Table,
   TableBody,
@@ -32,11 +33,12 @@ import {
 
 interface PlayerReportsTableProps {
   reports: PlayerReport[];
+  players: Player[];
   matches: Match[];
   users: User[];
 }
 
-export default function PlayerReportsTable({ reports, matches, users }: PlayerReportsTableProps) {
+export default function PlayerReportsTable({ reports, players, matches, users }: PlayerReportsTableProps) {
   const [filterMatch, setFilterMatch] = useState('all');
   const [filterTeam, setFilterTeam] = useState('');
   const [filterPlayer, setFilterPlayer] = useState('');
@@ -58,13 +60,18 @@ export default function PlayerReportsTable({ reports, matches, users }: PlayerRe
     return users.filter(u => scoutIds.has(u.id));
   }, [reports, users]);
 
-  const filteredReports = reports.filter(report => {
-    const matchFilterPassed = filterMatch === 'all' || report.matchId === filterMatch;
-    const teamFilterPassed = !filterTeam || report.teamName.toLowerCase().includes(filterTeam.toLowerCase());
-    const playerFilterPassed = !filterPlayer || report.playerName.toLowerCase().includes(filterPlayer.toLowerCase());
-    const scoutFilterPassed = filterScout === 'all' || report.scoutId === filterScout;
-    return matchFilterPassed && teamFilterPassed && playerFilterPassed && scoutFilterPassed;
-  });
+  const filteredReports = useMemo(() => {
+    return reports.filter(report => {
+        const player = players.find(p => p.id === report.playerId);
+        if (!player) return false;
+
+        const matchFilterPassed = filterMatch === 'all' || report.matchId === filterMatch;
+        const teamFilterPassed = !filterTeam || player.teamName.toLowerCase().includes(filterTeam.toLowerCase());
+        const playerFilterPassed = !filterPlayer || `${player.firstName} ${player.lastName}`.toLowerCase().includes(filterPlayer.toLowerCase());
+        const scoutFilterPassed = filterScout === 'all' || report.scoutId === filterScout;
+        return matchFilterPassed && teamFilterPassed && playerFilterPassed && scoutFilterPassed;
+    });
+  }, [reports, players, filterMatch, filterTeam, filterPlayer, filterScout]);
 
   return (
     <div>
@@ -119,47 +126,54 @@ export default function PlayerReportsTable({ reports, matches, users }: PlayerRe
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredReports.map(report => (
-            <TableRow key={report.id}>
-              <TableCell>
-                <div className="font-medium">{report.playerName}</div>
-                <div className="text-sm text-muted-foreground">{report.teamName}</div>
-              </TableCell>
-              <TableCell>{getMatchDescription(report.matchId)}</TableCell>
-              <TableCell>{getScoutName(report.scoutId)}</TableCell>
-              <TableCell>
-                <div className="flex items-center">
-                  <Badge variant="default" className="flex items-center gap-1">
-                    {report.rating} <Star className="h-3 w-3" />
-                  </Badge>
-                </div>
-              </TableCell>
-              <TableCell className="text-right">
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button variant="ghost" size="sm">
-                      <Eye className="mr-2 h-4 w-4" /> Ver Notas
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Notas de: {report.playerName}</DialogTitle>
-                      <DialogDescription>
-                          <span>Ojeador: {getScoutName(report.scoutId)}</span>
-                          <br />
-                          <span>Posición: {report.position}</span>
-                          <br />
-                          <span>Partido: {getMatchDescription(report.matchId)}</span>
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="mt-4 rounded-md border bg-muted p-4">
-                      <p className="text-sm italic">"{report.notes}"</p>
+          {filteredReports.map(report => {
+            const player = players.find(p => p.id === report.playerId);
+            if (!player) return null;
+
+            return (
+                <TableRow key={report.id}>
+                <TableCell>
+                    <div className="font-medium">{player.firstName} {player.lastName}</div>
+                    <div className="text-sm text-muted-foreground">{player.teamName}</div>
+                </TableCell>
+                <TableCell>{getMatchDescription(report.matchId)}</TableCell>
+                <TableCell>{getScoutName(report.scoutId)}</TableCell>
+                <TableCell>
+                    <div className="flex items-center">
+                    <Badge variant="default" className="flex items-center gap-1">
+                        {report.rating} <Star className="h-3 w-3" />
+                    </Badge>
                     </div>
-                  </DialogContent>
-                </Dialog>
-              </TableCell>
-            </TableRow>
-          ))}
+                </TableCell>
+                <TableCell className="text-right">
+                    <Dialog>
+                    <DialogTrigger asChild>
+                        <Button variant="ghost" size="sm">
+                        <Eye className="mr-2 h-4 w-4" /> Ver Notas
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                        <DialogHeader>
+                        <DialogTitle>Notas de: {player.firstName} {player.lastName}</DialogTitle>
+                        <DialogDescription>
+                            <div>
+                                <span>Ojeador: {getScoutName(report.scoutId)}</span>
+                                <br />
+                                <span>Posición: {player.position}</span>
+                                <br />
+                                <span>Partido: {getMatchDescription(report.matchId)}</span>
+                            </div>
+                        </DialogDescription>
+                        </DialogHeader>
+                        <div className="mt-4 rounded-md border bg-muted p-4">
+                        <p className="text-sm italic">"{report.notes}"</p>
+                        </div>
+                    </DialogContent>
+                    </Dialog>
+                </TableCell>
+                </TableRow>
+            );
+        })}
           {filteredReports.length === 0 && (
             <TableRow>
               <TableCell colSpan={5} className="text-center">

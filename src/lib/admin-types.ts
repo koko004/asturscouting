@@ -25,14 +25,22 @@ export type Match = {
 
 export type PlayerPosition = 'Portero (POR)' | 'Defensa (DEF)' | 'Centrocampista (CEN)' | 'Delantero (DEL)';
 
+export type Player = {
+    id: string;
+    firstName: string;
+    lastName: string;
+    nationality: string;
+    age: number;
+    teamName: string;
+    position: PlayerPosition;
+    jerseyNumber: number;
+};
+
 export type PlayerReport = {
     id: string;
     playerId: string;
     matchId: string;
     scoutId: string;
-    teamName: string;
-    playerName: string;
-    position: PlayerPosition;
     rating: number; // 1-10
     notes: string;
 }
