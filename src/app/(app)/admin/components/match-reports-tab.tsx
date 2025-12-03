@@ -111,7 +111,11 @@ export default function MatchReportsTab() {
                 {sortedMatches.map(match => (
                     <TableRow key={match.id}>
                         <TableCell>
-                            <div className="font-medium">{match.homeTeam.name} vs {match.awayTeam.name}</div>
+                            <Button variant="link" asChild className="p-0 h-auto font-medium -translate-x-4">
+                                <Link href={`/matches/${match.id}`}>
+                                    {match.homeTeam.name} vs {match.awayTeam.name}
+                                </Link>
+                            </Button>
                             <div className="text-sm text-muted-foreground">{match.competition}</div>
                         </TableCell>
                         <TableCell>{getScoutName(match.assignedScoutId)}</TableCell>
