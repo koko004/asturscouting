@@ -156,13 +156,11 @@ export default function PlayerReportsTable({ reports, players, matches, users }:
                         <DialogHeader>
                         <DialogTitle>Notas de: {player.firstName} {player.lastName}</DialogTitle>
                         <DialogDescription>
-                            <div>
-                                <span>Ojeador: {getScoutName(report.scoutId)}</span>
-                                <br />
-                                <span>Posición: {player.position}</span>
-                                <br />
-                                <span>Partido: {getMatchDescription(report.matchId)}</span>
-                            </div>
+                            <span>Ojeador: {getScoutName(report.scoutId)}</span>
+                            <br />
+                            <span>Posición: {player.position}</span>
+                            <br />
+                            <span>Partido: {getMatchDescription(report.matchId)}</span>
                         </DialogDescription>
                         </DialogHeader>
                         <div className="mt-4 rounded-md border bg-muted p-4">
