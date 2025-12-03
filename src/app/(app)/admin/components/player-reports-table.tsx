@@ -30,6 +30,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import Link from 'next/link';
 
 interface PlayerReportsTableProps {
   reports: PlayerReport[];
@@ -133,7 +134,11 @@ export default function PlayerReportsTable({ reports, players, matches, users }:
             return (
                 <TableRow key={report.id}>
                 <TableCell>
-                    <div className="font-medium">{player.firstName} {player.lastName}</div>
+                    <Button variant="link" asChild className="p-0 h-auto font-medium -translate-x-4">
+                        <Link href={`/players/${player.id}`}>
+                           {player.firstName} {player.lastName}
+                        </Link>
+                    </Button>
                     <div className="text-sm text-muted-foreground">{player.teamName}</div>
                 </TableCell>
                 <TableCell>{getMatchDescription(report.matchId)}</TableCell>
