@@ -72,7 +72,8 @@ export const players: Player[] = [
         preferredFoot: 'Right',
         strengths: ['Juego aéreo', 'Definición'],
         weaknesses: ['Velocidad'],
-        attributes: { attacking: 85, technical: 75, creativity: 70, defending: 40, tactical: 78 }
+        attributes: { attacking: 85, technical: 75, tactical: 78, defending: 40, creativity: 70, physical: 88 },
+        recommendation: 'Seleccionar',
     },
     {
         id: 'p2',
@@ -89,7 +90,8 @@ export const players: Player[] = [
         preferredFoot: 'Left',
         strengths: ['Visión de juego', 'Pase'],
         weaknesses: ['Fuerza física'],
-        attributes: { attacking: 72, technical: 88, creativity: 90, defending: 65, tactical: 85 }
+        attributes: { attacking: 72, technical: 88, tactical: 85, defending: 65, creativity: 90, physical: 70 },
+        recommendation: 'Seguir observando',
     },
     {
         id: 'p3',
@@ -106,7 +108,8 @@ export const players: Player[] = [
         preferredFoot: 'Right',
         strengths: ['Regate', 'Tiro lejano'],
         weaknesses: ['Trabajo defensivo'],
-        attributes: { attacking: 80, technical: 85, creativity: 88, defending: 50, tactical: 75 }
+        attributes: { attacking: 80, technical: 85, tactical: 75, defending: 50, creativity: 88, physical: 65 },
+        recommendation: 'Seguimiento especial',
     },
     {
         id: 'p4',
@@ -123,7 +126,8 @@ export const players: Player[] = [
         preferredFoot: 'Both',
         strengths: ['Lucha', 'Remate'],
         weaknesses: [],
-        attributes: { attacking: 90, technical: 80, creativity: 75, defending: 45, tactical: 82 }
+        attributes: { attacking: 90, technical: 80, tactical: 82, defending: 45, creativity: 75, physical: 85 },
+        recommendation: 'Seleccionar',
     }
 ];
 

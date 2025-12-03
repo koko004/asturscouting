@@ -1,5 +1,5 @@
 'use client';
-import { PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, RadarChart } from "recharts"
+import { PolarGrid, PolarAngleAxis, Radar, RadarChart } from "recharts"
 
 import {
   Card,
@@ -28,6 +28,7 @@ export default function PlayerAttributesChart({ attributes }: PlayerAttributesCh
         { attribute: "Táctica", value: attributes.tactical, fullMark: 100 },
         { attribute: "Defensa", value: attributes.defending, fullMark: 100 },
         { attribute: "Creatividad", value: attributes.creativity, fullMark: 100 },
+        { attribute: "Físico", value: attributes.physical, fullMark: 100 },
     ];
     
     const chartConfig = {
@@ -50,7 +51,7 @@ export default function PlayerAttributesChart({ attributes }: PlayerAttributesCh
                     config={chartConfig}
                     className="mx-auto aspect-square w-full max-w-[250px]"
                     >
-                    <RadarChart data={chartData}>
+                    <RadarChart data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                         <ChartTooltip
                         cursor={false}
                         content={<ChartTooltipContent indicator="line" />}
@@ -58,10 +59,10 @@ export default function PlayerAttributesChart({ attributes }: PlayerAttributesCh
                         <PolarAngleAxis dataKey="attribute" />
                         <PolarGrid />
                         <Radar
-                        dataKey="value"
-                        fill="hsl(var(--primary))"
-                        fillOpacity={0.6}
-                        stroke="hsl(var(--primary))"
+                            dataKey="value"
+                            fill="hsl(var(--primary))"
+                            fillOpacity={0.6}
+                            stroke="hsl(var(--primary))"
                         />
                     </RadarChart>
                 </ChartContainer>

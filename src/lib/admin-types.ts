@@ -26,6 +26,9 @@ export type Match = {
 export const playerPositions = ['Portero (POR)', 'Defensa (DEF)', 'Centrocampista (CEN)', 'Delantero (DEL)'] as const;
 export type PlayerPosition = (typeof playerPositions)[number];
 
+export const recommendations = ['Sin definir', 'Seguir observando', 'Seguimiento especial', 'Seleccionar', 'Descartar'] as const;
+export type Recommendation = (typeof recommendations)[number];
+
 
 export type Player = {
     id: string;
@@ -45,10 +48,12 @@ export type Player = {
     attributes: {
         attacking: number;
         technical: number;
-        creativity: number;
-        defending: number;
         tactical: number;
+        defending: number;
+        creativity: number;
+        physical: number; // Added this
     };
+    recommendation?: Recommendation;
 };
 
 export type PlayerReport = {
@@ -63,4 +68,6 @@ export type PlayerReport = {
 export type Report = PlayerReport & {
     matchDescription: string;
     scoutName: string;
+    matchDate: string; 
+    opponent: { name: string; logoUrl: string };
 }

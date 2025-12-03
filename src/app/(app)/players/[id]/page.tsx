@@ -3,7 +3,7 @@
 import { useParams } from 'next/navigation';
 import { useState, useMemo } from 'react';
 import PageHeader from '@/components/page-header';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -17,6 +17,8 @@ import PlayerStrengthsWeaknesses from './components/player-strengths-weaknesses'
 import PlayerPositionMap from './components/player-position-map';
 import PlayerInfoCard from './components/player-info-card';
 import PlayerRatingHistory from './components/player-rating-history';
+import PlayerReportsList from './components/player-reports-list';
+import PlayerAttributesForm from './components/player-attributes-form';
 
 
 export default function PlayerProfilePage() {
@@ -48,40 +50,34 @@ export default function PlayerProfilePage() {
             .sort((a, b) => new Date(b.matchDate).getTime() - new Date(a.matchDate).getTime());
     }, [playerId, player]);
 
-    const averageRating = useMemo(() => {
-        if (playerReports.length === 0) return 0;
-        const total = playerReports.reduce((sum, report) => sum + report.rating, 0);
-        return parseFloat((total / playerReports.length).toFixed(1));
-    }, [playerReports]);
-
 
     if (!player) {
         return <div className="flex h-full items-center justify-center">Jugador no encontrado</div>;
     }
 
-    const handleSavePlayer = (updatedPlayer: Player) => {
-        setPlayer(updatedPlayer);
+    const handleSavePlayer = (updatedPlayer: Partial<Player>) => {
+        setPlayer(prev => prev ? { ...prev, ...updatedPlayer } : undefined);
         // Here you would also update the allPlayers array or send to a backend
     };
     
     return (
         <div className="flex flex-col gap-6">
             <Card>
-                <CardContent className="relative pt-6">
-                     <Button onClick={() => setIsFormOpen(true)} size="icon" variant="ghost" className="absolute top-4 right-4 h-8 w-8">
+                <CardContent className="relative p-4 md:p-6">
+                     <Button onClick={() => setIsFormOpen(true)} size="icon" variant="ghost" className="absolute top-2 right-2 h-8 w-8">
                         <Edit className="h-4 w-4" />
                         <span className="sr-only">Editar Perfil</span>
                     </Button>
-                    <div className="flex flex-col md:flex-row items-center gap-6">
+                    <div className="flex flex-col md:flex-row items-start gap-4 md:gap-6">
                         <Image
                             src={`https://picsum.photos/seed/${player.id}/200/280`}
                             alt={`Foto de ${player.firstName} ${player.lastName}`}
                             width={140}
                             height={200}
-                            className="h-auto w-36 rounded-md object-cover shadow-md"
+                            className="h-auto w-24 md:w-36 rounded-md object-cover shadow-md"
                             data-ai-hint="person face"
                         />
-                        <div className="flex-1 space-y-4 text-center md:text-left w-full">
+                        <div className="flex-1 space-y-3 w-full">
                             <PageHeader title={`${player.firstName} ${player.lastName}`} />
                             <PlayerInfoCard player={player} />
                             <PlayerRatingHistory reports={playerReports} />
@@ -91,8 +87,9 @@ export default function PlayerProfilePage() {
             </Card>
 
             <Tabs defaultValue="summary">
-                <TabsList className="grid w-full grid-cols-2">
+                <TabsList className="grid w-full grid-cols-3">
                     <TabsTrigger value="summary">Resumen</TabsTrigger>
+                    <TabsTrigger value="attributes">Atributos</TabsTrigger>
                     <TabsTrigger value="reports">Informes ({playerReports.length})</TabsTrigger>
                 </TabsList>
                 <TabsContent value="summary" className="mt-6">
@@ -109,31 +106,11 @@ export default function PlayerProfilePage() {
                         </div>
                     </div>
                 </TabsContent>
+                 <TabsContent value="attributes" className="mt-6">
+                    <PlayerAttributesForm player={player} onSave={handleSavePlayer} />
+                </TabsContent>
                 <TabsContent value="reports" className="mt-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Historial de Informes</CardTitle>
-                            <CardDescription>Todos los informes de scouting para este jugador.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            {playerReports.map((report: Report) => (
-                                <Card key={report.id}>
-                                    <CardHeader>
-                                        <CardTitle className="text-base">{report.matchDescription}</CardTitle>
-                                        <CardDescription>
-                                            Ojeador: {report.scoutName} | Valoración: {report.rating}/10
-                                        </CardDescription>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <p className="italic">"{report.notes}"</p>
-                                    </CardContent>
-                                </Card>
-                            ))}
-                            {playerReports.length === 0 && (
-                                <p className="text-center text-muted-foreground py-8">No hay informes para este jugador.</p>
-                            )}
-                        </CardContent>
-                    </Card>
+                    <PlayerReportsList reports={playerReports} />
                 </TabsContent>
             </Tabs>
             
