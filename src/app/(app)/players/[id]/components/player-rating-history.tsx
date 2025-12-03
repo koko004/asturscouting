@@ -62,15 +62,14 @@ export default function PlayerRatingHistory({ reports }: PlayerRatingHistoryProp
 
   return (
     <div className="rounded-lg bg-muted/50 p-4 space-y-3">
-        <div className="flex justify-between items-center">
-            <h4 className="font-semibold text-sm">Cronología de Valoración</h4>
+        <div className="flex justify-start items-center">
             {seasons.length > 0 && (
                 <Select value={selectedSeason} onValueChange={setSelectedSeason}>
-                    <SelectTrigger className="w-[140px] h-8 text-xs">
+                    <SelectTrigger className="w-auto h-auto p-0 bg-transparent border-0 text-xs text-muted-foreground focus:ring-0">
                         <SelectValue placeholder="Temporada" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="all">Todas</SelectItem>
+                        <SelectItem value="all">Todas las temporadas</SelectItem>
                         {seasons.map(season => (
                             <SelectItem key={season} value={season}>{season}</SelectItem>
                         ))}
