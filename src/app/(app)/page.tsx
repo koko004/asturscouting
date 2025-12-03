@@ -1,15 +1,19 @@
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { matches, users, players } from '@/lib/admin-data';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Lock, Unlock, User, MapPin, Target } from 'lucide-react';
+import { ArrowRight, Lock, Unlock, User, MapPin, Target, Mail, ShieldCheck } from 'lucide-react';
 import PageHeader from '@/components/page-header';
 import { Separator } from '@/components/ui/separator';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 
 export default function DashboardPage() {
   // In a real app, this would come from an auth context
   const currentUserId = 'u2'; 
+  const currentUser = users.find(u => u.id === currentUserId);
   const assignedMatches = matches.filter(m => m.assignedScoutId === currentUserId);
   const assignedPlayers = players.filter(p => p.assignedScoutId === currentUserId);
 
@@ -26,6 +30,32 @@ export default function DashboardPage() {
         description="Revisa tus partidos y jugadores asignados."
       />
       
+      {currentUser && (
+        <Card>
+          <CardContent className="p-4 flex items-center gap-4">
+             <Avatar className="h-16 w-16">
+              <AvatarImage src={currentUser.avatarUrl} alt={currentUser.name} />
+              <AvatarFallback>{currentUser.name.charAt(0)}</AvatarFallback>
+            </Avatar>
+            <div className="grid gap-1">
+              <h2 className="text-xl font-bold">{currentUser.name}</h2>
+              <div className="text-sm text-muted-foreground flex flex-col sm:flex-row sm:items-center gap-x-4 gap-y-1">
+                 <div className="flex items-center gap-1.5">
+                    <Mail className="h-4 w-4" />
+                    {currentUser.email}
+                 </div>
+                 <div className="flex items-center gap-1.5">
+                    <ShieldCheck className="h-4 w-4" />
+                    <Badge variant={currentUser.role === 'admin' ? 'destructive' : 'secondary'}>
+                        {currentUser.role}
+                    </Badge>
+                 </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <div>
         <h2 className="text-2xl font-bold tracking-tight mb-4">Partidos Asignados</h2>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
