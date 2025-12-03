@@ -1,8 +1,8 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { matches } from '@/lib/data';
-import type { Player } from '@/lib/types';
+import { matches, users, players as allPlayers } from '@/lib/admin-data';
+import type { Player, Player as PlayerInDB } from '@/lib/admin-types';
 import { useState, useMemo } from 'react';
 import PageHeader from '@/components/page-header';
 import InteractiveField from './components/interactive-field';
@@ -24,17 +24,27 @@ import {
 import { Lock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
+const CURRENT_USER_ID = 'u1'; // Assume admin 'u1' for testing this feature
+
 export default function MatchPage() {
   const params = useParams();
   const matchId = typeof params.id === 'string' ? params.id : '';
   const initialMatch = useMemo(() => matches.find((m) => m.id === matchId), [matchId]);
 
   const [match, setMatch] = useState(initialMatch);
-  const [players, setPlayers] = useState<Player[]>([]);
+  const [evaluatedPlayers, setEvaluatedPlayers] = useState<Player[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
 
+  // This state would in a real app be managed by a global state or fetched from a DB
+  const [globalPlayers, setGlobalPlayers] = useState<PlayerInDB[]>(allPlayers);
+
   const { toast } = useToast();
+  
+  const currentUser = useMemo(() => users.find(u => u.id === CURRENT_USER_ID), []);
+  const isAdmin = currentUser?.role === 'admin';
+  const playersInDb = useMemo(() => globalPlayers.map(p => p.id), [globalPlayers]);
+
 
   if (!match) {
     return (
@@ -45,7 +55,7 @@ export default function MatchPage() {
   }
 
   const handlePlayerUpdate = (updatedPlayers: Player[]) => {
-    setPlayers(updatedPlayers);
+    setEvaluatedPlayers(updatedPlayers);
   };
   
   const handleEditPlayer = (player: Player) => {
@@ -62,7 +72,7 @@ export default function MatchPage() {
   
   const handleSelectPlayerFromField = (tacticalPlayer: { id: string, name: string, team: 'home' | 'away' }) => {
     if (match.isClosed) return;
-    const existingPlayer = players.find((p) => p.id === tacticalPlayer.id);
+    const existingPlayer = evaluatedPlayers.find((p) => p.id === tacticalPlayer.id);
     if (existingPlayer) {
       setSelectedPlayer(existingPlayer);
     } else {
@@ -75,18 +85,18 @@ export default function MatchPage() {
         rating: 5,
         notes: '',
       };
-      setPlayers([...players, newPlayer]);
+      setEvaluatedPlayers([...evaluatedPlayers, newPlayer]);
       setSelectedPlayer(newPlayer);
     }
     setIsFormOpen(true);
   };
 
   const handleSavePlayer = (player: Player) => {
-    const playerExists = players.some((p) => p.id === player.id);
+    const playerExists = evaluatedPlayers.some((p) => p.id === player.id);
     if (playerExists) {
-      setPlayers(players.map((p) => (p.id === player.id ? player : p)));
+      setEvaluatedPlayers(evaluatedPlayers.map((p) => (p.id === player.id ? player : p)));
     } else {
-      setPlayers([...players, player]);
+      setEvaluatedPlayers([...evaluatedPlayers, player]);
     }
   };
   
@@ -96,6 +106,32 @@ export default function MatchPage() {
     toast({
       title: "Informe Cerrado",
       description: "El informe del partido ha sido cerrado y guardado.",
+    });
+  };
+
+  const handleAddToDatabase = (player: Player) => {
+    // This is a simplified transformation. A real app might have more complex logic.
+    const [firstName, ...lastNameParts] = player.name.split(' ');
+    const newDbPlayer: PlayerInDB = {
+        id: player.id,
+        firstName: firstName || 'Nuevo',
+        lastName: lastNameParts.join(' ') || 'Jugador',
+        nationality: 'Desconocida',
+        age: player.age,
+        teamName: 'Desconocido', // The team should be derived from the match context
+        position: player.position,
+        jerseyNumber: player.jerseyNumber,
+        height: 180,
+        weight: 75,
+        preferredFoot: 'Right',
+        attributes: { attacking: 50, technical: 50, tactical: 50, defending: 50, creativity: 50, physical: 50 },
+    };
+    
+    setGlobalPlayers(prev => [...prev, newDbPlayer]);
+    
+    toast({
+      title: 'Jugador Añadido',
+      description: `${player.name} ha sido añadido a la base de datos principal.`,
     });
   };
 
@@ -111,11 +147,14 @@ export default function MatchPage() {
         </div>
         <div className="lg:col-span-1">
             <PlayerList 
-            players={players} 
-            onPlayerUpdate={handlePlayerUpdate}
-            onEditPlayer={handleEditPlayer}
-            onAddNewPlayer={handleAddNewPlayer} 
-            isReadOnly={match.isClosed}
+              players={evaluatedPlayers}
+              playersInDb={playersInDb}
+              onPlayerUpdate={handlePlayerUpdate}
+              onEditPlayer={handleEditPlayer}
+              onAddNewPlayer={handleAddNewPlayer} 
+              onAddToDatabase={handleAddToDatabase}
+              isReadOnly={match.isClosed}
+              isAdmin={isAdmin}
             />
         </div>
         <div className="lg:col-span-3">

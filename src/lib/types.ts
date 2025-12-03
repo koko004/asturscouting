@@ -22,6 +22,31 @@ export type Player = {
   notes: string;
 };
 
+// Represents a player in the main database, with more details.
+export type PlayerInDB = {
+    id: string;
+    firstName: string;
+    lastName: string;
+    nationality: string;
+    age: number;
+    teamName: string;
+    teamLogoUrl?: string;
+    position: PlayerPosition;
+    jerseyNumber: number;
+    height: number;
+    weight: number;
+    preferredFoot: 'Left' | 'Right' | 'Both';
+    attributes: {
+        attacking: number;
+        technical: number;
+        tactical: number;
+        defending: number;
+        creativity: number;
+        physical: number;
+    };
+    assignedScoutId?: string;
+};
+
 export type TacticalElement = {
   id: string;
   label: string;
