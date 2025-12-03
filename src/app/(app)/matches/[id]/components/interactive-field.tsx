@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Save } from 'lucide-react';
+import { Save, Move, ArrowUpRight, Eraser } from 'lucide-react';
 import type { TacticalElement, Formation, Team } from '@/lib/types';
 import { formations } from '@/lib/types';
 import { getPlayerPositions } from '@/lib/formations';
@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
 
 const SoccerFieldSVG = () => (
     <svg width="100%" height="100%" viewBox="0 0 680 1050" preserveAspectRatio="none">
@@ -38,6 +39,12 @@ const SoccerFieldSVG = () => (
     </svg>
 );
 
+interface Arrow {
+  id: string;
+  start: { x: number; y: number };
+  end: { x: number; y: number };
+}
+
 interface InteractiveFieldProps {
     onPlayerClick: (player: {id: string, name: string, team: 'home' | 'away'}) => void;
     homeTeam: Team;
@@ -45,17 +52,23 @@ interface InteractiveFieldProps {
     isReadOnly?: boolean;
 }
 
+type Tool = 'move' | 'arrow';
+
 export default function InteractiveField({ onPlayerClick, homeTeam, awayTeam, isReadOnly = false }: InteractiveFieldProps) {
   const [homeFormation, setHomeFormation] = useState<Formation>('4-4-2');
   const [awayFormation, setAwayFormation] = useState<Formation>('4-3-3');
   const fieldRef = useRef<HTMLDivElement>(null);
 
   const [elements, setElements] = useState<TacticalElement[]>([]);
+  const [arrows, setArrows] = useState<Arrow[]>([]);
+  const [currentArrow, setCurrentArrow] = useState<Arrow | null>(null);
+
   const [draggedElementId, setDraggedElementId] = useState<string | null>(null);
-  
   const [isDragging, setIsDragging] = useState(false);
   const dragStartRef = useRef({ x: 0, y: 0 });
 
+  const [activeTool, setActiveTool] = useState<Tool>('move');
+  
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
 
@@ -67,71 +80,90 @@ export default function InteractiveField({ onPlayerClick, homeTeam, awayTeam, is
   
   const handleSave = () => {
     setIsSaving(true);
-    // Here you would typically save the 'elements' state to your backend
+    // Here you would typically save the 'elements' and 'arrows' state to your backend
     console.log('Saving player positions:', elements.map(e => ({id: e.id, pos: e.position})));
+    console.log('Saving arrows:', arrows);
     setTimeout(() => {
       toast({
-        title: 'Posiciones Guardadas',
-        description: 'Las posiciones actuales de los jugadores han sido guardadas.',
+        title: 'Táctica Guardada',
+        description: 'Las posiciones y los dibujos han sido guardados.',
       });
       setIsSaving(false);
     }, 1000);
   };
   
-  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>, id: string) => {
+  const getCoords = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!fieldRef.current) return { x: 0, y: 0 };
+    const fieldRect = fieldRef.current.getBoundingClientRect();
+    const x = ((e.clientX - fieldRect.left) / fieldRect.width) * 100;
+    const y = ((e.clientY - fieldRect.top) / fieldRect.height) * 100;
+    return { x, y };
+  }
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>, id?: string) => {
     if (isReadOnly) return;
     e.currentTarget.setPointerCapture(e.pointerId);
-    setDraggedElementId(id);
-    setIsDragging(false);
     dragStartRef.current = { x: e.clientX, y: e.clientY };
+
+    if (activeTool === 'move' && id) {
+      setDraggedElementId(id);
+      setIsDragging(false);
+    } else if (activeTool === 'arrow') {
+      const start = getCoords(e);
+      const newArrow = { id: `arrow-${Date.now()}`, start, end: start };
+      setCurrentArrow(newArrow);
+    }
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (isReadOnly || !draggedElementId || !fieldRef.current) return;
+    if (isReadOnly) return;
 
-    const dx = Math.abs(e.clientX - dragStartRef.current.x);
-    const dy = Math.abs(e.clientY - dragStartRef.current.y);
+    if (activeTool === 'move' && draggedElementId && fieldRef.current) {
+      const dx = Math.abs(e.clientX - dragStartRef.current.x);
+      const dy = Math.abs(e.clientY - dragStartRef.current.y);
 
-    if (!isDragging && (dx > 5 || dy > 5)) {
-      setIsDragging(true);
-    }
-    
-    if (isDragging) {
-      const fieldRect = fieldRef.current.getBoundingClientRect();
-      let x = ((e.clientX - fieldRect.left) / fieldRect.width) * 100;
-      let y = ((e.clientY - fieldRect.top) / fieldRect.height) * 100;
-      
-      const isHomePlayer = draggedElementId.startsWith('H');
-
-      if (isHomePlayer) {
-          y = Math.max(50, y);
-      } else {
-          y = Math.min(50, y);
+      if (!isDragging && (dx > 5 || dy > 5)) {
+        setIsDragging(true);
       }
+      
+      if (isDragging) {
+        const { x, y } = getCoords(e);
+        const isHomePlayer = draggedElementId.startsWith('H');
+        const clampedY = isHomePlayer ? Math.max(50, y) : Math.min(50, y);
+        const clampedX = Math.max(0, Math.min(100, x));
 
-      x = Math.max(0, Math.min(100, x));
-      y = Math.max(0, Math.min(100, y));
-
-      setElements((prev) =>
-        prev.map((el) => (el.id === draggedElementId ? { ...el, position: { x, y } } : el))
-      );
+        setElements((prev) =>
+          prev.map((el) => (el.id === draggedElementId ? { ...el, position: { x: clampedX, y: clampedY } } : el))
+        );
+      }
+    } else if (activeTool === 'arrow' && currentArrow) {
+      const end = getCoords(e);
+      setCurrentArrow({ ...currentArrow, end });
     }
   };
 
   const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (draggedElementId) {
-        e.currentTarget.releasePointerCapture(e.pointerId);
-        
+    e.currentTarget.releasePointerCapture(e.pointerId);
+
+    if (activeTool === 'move' && draggedElementId) {
         if (!isDragging) {
             const el = elements.find(elem => elem.id === draggedElementId);
             if (el) {
                 onPlayerClick({ id: el.id, name: el.label, team: el.id.startsWith('H') ? 'home' : 'away' });
             }
         }
-        
         setDraggedElementId(null);
+        setIsDragging(false);
+    } else if (activeTool === 'arrow' && currentArrow) {
+        if (Math.hypot(currentArrow.end.x - currentArrow.start.x, currentArrow.end.y - currentArrow.start.y) > 2) {
+             setArrows(prev => [...prev, currentArrow]);
+        }
+        setCurrentArrow(null);
     }
-    setIsDragging(false);
+  };
+  
+  const clearDrawings = () => {
+    setArrows([]);
   };
 
   return (
@@ -164,33 +196,43 @@ export default function InteractiveField({ onPlayerClick, homeTeam, awayTeam, is
                 </Select>
               </div>
               <Button size="sm" onClick={handleSave} disabled={isSaving || isReadOnly} className="w-full sm:w-auto">
-                <Save className="mr-2 h-4 w-4" /> {isSaving ? 'Guardando...' : 'Guardar Posiciones'}
+                <Save className="mr-2 h-4 w-4" /> {isSaving ? 'Guardando...' : 'Guardar Táctica'}
               </Button>
             </div>
         </div>
       </CardHeader>
-      <CardContent className="flex-1 flex items-center justify-center p-2">
+      <CardContent className="flex-1 flex items-center justify-center p-2 relative">
         <div
             ref={fieldRef}
+            onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
-            className={`relative w-full max-w-lg touch-none select-none overflow-hidden rounded-lg aspect-[680/1050] ${isReadOnly ? 'cursor-not-allowed' : ''}`}
+            onPointerUp={handlePointerUp}
+            className={cn(
+              'relative w-full max-w-lg touch-none select-none overflow-hidden rounded-lg aspect-[680/1050]',
+              isReadOnly ? 'cursor-not-allowed' : (activeTool === 'arrow' ? 'cursor-crosshair' : '')
+            )}
         >
             <div className="absolute inset-0">
-            <SoccerFieldSVG />
+              <SoccerFieldSVG />
             </div>
+            <svg className="absolute inset-0 w-full h-full" style={{ pointerEvents: 'none' }}>
+                <defs>
+                    <marker id="arrowhead" markerWidth="5" markerHeight="3.5" refX="5" refY="1.75" orient="auto">
+                        <polygon points="0 0, 5 1.75, 0 3.5" fill="yellow" />
+                    </marker>
+                </defs>
+                {arrows.map(arrow => (
+                    <line key={arrow.id} x1={`${arrow.start.x}%`} y1={`${arrow.start.y}%`} x2={`${arrow.end.x}%`} y2={`${arrow.end.y}%`} stroke="yellow" strokeWidth="3" markerEnd="url(#arrowhead)" />
+                ))}
+                {currentArrow && (
+                    <line x1={`${currentArrow.start.x}%`} y1={`${currentArrow.start.y}%`} x2={`${currentArrow.end.x}%`} y2={`${currentArrow.end.y}%`} stroke="yellow" strokeWidth="3" strokeDasharray="5,5" markerEnd="url(#arrowhead)" />
+                )}
+            </svg>
             {elements.map((el) => (
             <div
                 key={el.id}
                 onPointerDown={(e) => handlePointerDown(e, el.id)}
-                onPointerUp={handlePointerUp}
-                onPointerLeave={(e) => { 
-                    if (draggedElementId) {
-                        e.currentTarget.releasePointerCapture(e.pointerId);
-                        setDraggedElementId(null);
-                        setIsDragging(false);
-                    }
-                }}
-                className={`absolute flex h-7 w-7 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 text-white shadow-lg ${isReadOnly ? 'cursor-not-allowed' : 'cursor-grab active:cursor-grabbing'}`}
+                className={`absolute flex h-7 w-7 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 text-white shadow-lg ${isReadOnly ? 'cursor-not-allowed' : (activeTool === 'move' ? 'cursor-grab active:cursor-grabbing' : 'pointer-events-none')}`}
                 style={{
                 left: `${el.position.x}%`,
                 top: `${el.position.y}%`,
@@ -203,6 +245,19 @@ export default function InteractiveField({ onPlayerClick, homeTeam, awayTeam, is
             </div>
             ))}
         </div>
+        {!isReadOnly && (
+            <div className="absolute top-4 left-4 flex flex-col gap-2 rounded-lg bg-background/80 p-2 border">
+                <Button variant={activeTool === 'move' ? 'secondary' : 'ghost'} size="icon" onClick={() => setActiveTool('move')} title="Mover Jugador">
+                    <Move />
+                </Button>
+                <Button variant={activeTool === 'arrow' ? 'secondary' : 'ghost'} size="icon" onClick={() => setActiveTool('arrow')} title="Dibujar Flecha">
+                    <ArrowUpRight />
+                </Button>
+                 <Button variant="ghost" size="icon" onClick={clearDrawings} title="Limpiar Dibujos">
+                    <Eraser className="text-destructive" />
+                </Button>
+            </div>
+        )}
       </CardContent>
     </Card>
     </>
