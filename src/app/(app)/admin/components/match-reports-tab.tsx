@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { matches as allMatches, users } from '@/lib/admin-data';
 import { Match } from '@/lib/admin-types';
@@ -14,18 +14,66 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { ArrowRight, Eye } from 'lucide-react';
+import { ArrowRight, ArrowUpDown, Eye } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
+type SortKey = 'match' | 'scout' | 'status';
 
 export default function MatchReportsTab() {
+  const [sortKey, setSortKey] = useState<SortKey>('match');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   const getScoutName = (scoutId: string | undefined) => {
     if (!scoutId) return 'Sin asignar';
     const scout = users.find(u => u.id === scoutId);
     return scout ? scout.name : 'Desconocido';
   };
+  
+  const sortedMatches = useMemo(() => {
+    return [...allMatches].sort((a, b) => {
+      let compareA, compareB;
+
+      switch (sortKey) {
+        case 'scout':
+          compareA = getScoutName(a.assignedScoutId);
+          compareB = getScoutName(b.assignedScoutId);
+          break;
+        case 'status':
+          compareA = a.isClosed.toString();
+          compareB = b.isClosed.toString();
+          break;
+        case 'match':
+        default:
+          compareA = `${a.homeTeam.name} vs ${a.awayTeam.name}`;
+          compareB = `${b.homeTeam.name} vs ${b.awayTeam.name}`;
+          break;
+      }
+
+      if (compareA < compareB) {
+        return sortDirection === 'asc' ? -1 : 1;
+      }
+      if (compareA > compareB) {
+        return sortDirection === 'asc' ? 1 : -1;
+      }
+      return 0;
+    });
+  }, [allMatches, sortKey, sortDirection]);
+
+  const handleSort = (key: SortKey) => {
+    if (sortKey === key) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortKey(key);
+      setSortDirection('asc');
+    }
+  };
+
+  const renderSortArrow = (key: SortKey) => {
+    if (sortKey !== key) return null;
+    return sortDirection === 'asc' ? '▲' : '▼';
+  };
+
 
   return (
     <Card>
@@ -41,14 +89,26 @@ export default function MatchReportsTab() {
         <Table>
             <TableHeader>
                 <TableRow>
-                    <TableHead>Partido</TableHead>
-                    <TableHead>Ojeador</TableHead>
-                    <TableHead>Estado</TableHead>
+                    <TableHead>
+                         <Button variant="ghost" onClick={() => handleSort('match')}>
+                            Partido <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </Button>
+                    </TableHead>
+                    <TableHead>
+                         <Button variant="ghost" onClick={() => handleSort('scout')}>
+                            Ojeador <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </Button>
+                    </TableHead>
+                    <TableHead>
+                         <Button variant="ghost" onClick={() => handleSort('status')}>
+                            Estado <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </Button>
+                    </TableHead>
                     <TableHead className="text-right">Acciones</TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {allMatches.map(match => (
+                {sortedMatches.map(match => (
                     <TableRow key={match.id}>
                         <TableCell>
                             <div className="font-medium">{match.homeTeam.name} vs {match.awayTeam.name}</div>

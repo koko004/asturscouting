@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import type { PlayerReport, Match, User, Player } from '@/lib/admin-types';
+import type { PlayerReport, Match, User, Player, Recommendation } from '@/lib/admin-types';
 import Link from 'next/link';
 import {
   Table,
@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Eye, Star } from 'lucide-react';
+import { Eye, Star, ArrowUpDown, CheckCircle2, XCircle, Target } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
@@ -31,6 +31,37 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { cn } from '@/lib/utils';
+
+type SortKey = 'player' | 'team' | 'rating' | 'scout' | 'recommendation';
+
+
+const RecommendationBadge = ({ recommendation }: { recommendation?: Recommendation }) => {
+    if (!recommendation || recommendation === 'Sin definir') {
+        return <Badge variant="outline">Sin definir</Badge>;
+    }
+
+    const config = {
+        'Seleccionar': { icon: CheckCircle2, className: 'bg-green-600 text-white' },
+        'Descartar': { icon: XCircle, className: 'bg-red-600 text-white' },
+        'Seguimiento especial': { icon: Target, className: 'bg-yellow-500 text-white' },
+        'Seguir observando': { icon: Eye, className: 'bg-blue-500 text-white' },
+    };
+
+    const { icon: Icon, className } = config[recommendation] || {};
+
+    if (!Icon) {
+        return <Badge variant="secondary">{recommendation}</Badge>;
+    }
+
+    return (
+        <Badge className={cn("text-center flex items-center justify-center gap-1.5", className)}>
+            <Icon className="h-3 w-3" />
+            {recommendation}
+        </Badge>
+    );
+};
+
 
 interface PlayersTableProps {
   reports: PlayerReport[];
@@ -44,6 +75,9 @@ export default function PlayersTable({ reports, players, matches, users, isAdmin
   const [filterTeam, setFilterTeam] = useState('');
   const [filterPlayer, setFilterPlayer] = useState('');
   const [filterScout, setFilterScout] = useState('all');
+  const [sortKey, setSortKey] = useState<SortKey>('player');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+
 
   const getMatchDescription = (matchId: string) => {
     const match = matches.find(m => m.id === matchId);
@@ -61,25 +95,73 @@ export default function PlayersTable({ reports, players, matches, users, isAdmin
     return users.filter(u => u.role === 'scout' && scoutIds.has(u.id));
   }, [reports, users]);
 
-  const latestReports = useMemo(() => {
+  const processedPlayers = useMemo(() => {
     const reportMap = new Map<string, PlayerReport>();
     reports.forEach(report => {
         if (!reportMap.has(report.playerId) || new Date(report.id) > new Date(reportMap.get(report.playerId)!.id)) {
             reportMap.set(report.playerId, report);
         }
     });
-    return Array.from(reportMap.values());
-  }, [reports]);
 
-  const filteredReports = latestReports.filter(report => {
-    const player = players.find(p => p.id === report.playerId);
-    if (!player) return false;
+    return players.map(player => {
+        const latestReport = reportMap.get(player.id);
+        return {
+            ...player,
+            latestReport,
+        };
+    });
+  }, [players, reports]);
 
-    const teamFilterPassed = !filterTeam || player.teamName.toLowerCase().includes(filterTeam.toLowerCase());
-    const playerFilterPassed = !filterPlayer || `${player.firstName} ${player.lastName}`.toLowerCase().includes(filterPlayer.toLowerCase());
-    const scoutFilterPassed = !isAdmin || filterScout === 'all' || report.scoutId === filterScout;
-    return teamFilterPassed && playerFilterPassed && scoutFilterPassed;
-  });
+  
+  const filteredPlayers = useMemo(() => {
+    let playersToFilter = processedPlayers.filter(player => {
+        const teamFilterPassed = !filterTeam || player.teamName.toLowerCase().includes(filterTeam.toLowerCase());
+        const playerFilterPassed = !filterPlayer || `${player.firstName} ${player.lastName}`.toLowerCase().includes(filterPlayer.toLowerCase());
+        const scoutFilterPassed = !isAdmin || filterScout === 'all' || (player.latestReport && player.latestReport.scoutId === filterScout);
+        return teamFilterPassed && playerFilterPassed && scoutFilterPassed;
+    });
+
+    return playersToFilter.sort((a, b) => {
+        let compareA, compareB;
+
+        switch (sortKey) {
+            case 'team':
+                compareA = a.teamName;
+                compareB = b.teamName;
+                break;
+            case 'rating':
+                compareA = a.latestReport?.rating ?? 0;
+                compareB = b.latestReport?.rating ?? 0;
+                break;
+            case 'scout':
+                compareA = a.latestReport ? getScoutName(a.latestReport.scoutId) : '';
+                compareB = b.latestReport ? getScoutName(b.latestReport.scoutId) : '';
+                break;
+            case 'recommendation':
+                compareA = a.recommendation || '';
+                compareB = b.recommendation || '';
+                break;
+            case 'player':
+            default:
+                compareA = `${a.firstName} ${a.lastName}`;
+                compareB = `${b.firstName} ${b.lastName}`;
+                break;
+        }
+
+        if (compareA < compareB) return sortDirection === 'asc' ? -1 : 1;
+        if (compareA > compareB) return sortDirection === 'asc' ? 1 : -1;
+        return 0;
+    });
+  }, [processedPlayers, filterTeam, filterPlayer, filterScout, isAdmin, sortKey, sortDirection]);
+
+  const handleSort = (key: SortKey) => {
+    if (sortKey === key) {
+        setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+        setSortKey(key);
+        setSortDirection('asc');
+    }
+  };
 
   return (
     <div>
@@ -115,20 +197,39 @@ export default function PlayersTable({ reports, players, matches, users, isAdmin
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Jugador</TableHead>
-            <TableHead>Club</TableHead>
-            <TableHead>Última Valoración</TableHead>
-            {isAdmin && <TableHead>Ojeador</TableHead>}
+            <TableHead>
+                <Button variant="ghost" onClick={() => handleSort('player')}>
+                    Jugador <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            </TableHead>
+            <TableHead>
+                <Button variant="ghost" onClick={() => handleSort('team')}>
+                    Club <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            </TableHead>
+            <TableHead>
+                <Button variant="ghost" onClick={() => handleSort('recommendation')}>
+                    Valoración <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            </TableHead>
+            <TableHead>
+                <Button variant="ghost" onClick={() => handleSort('rating')}>
+                    Última Nota <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            </TableHead>
+            {isAdmin && <TableHead>
+                <Button variant="ghost" onClick={() => handleSort('scout')}>
+                    Ojeador <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            </TableHead>}
             <TableHead className="text-right">Acciones</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredReports.map(report => {
-            const player = players.find(p => p.id === report.playerId);
-            if (!player) return null;
-
+          {filteredPlayers.map(player => {
+            const report = player.latestReport;
             return (
-                <TableRow key={report.id}>
+                <TableRow key={player.id}>
                 <TableCell className="font-medium">
                    <Button variant="link" asChild className="p-0 h-auto">
                         <Link href={`/players/${player.id}`}>
@@ -138,45 +239,58 @@ export default function PlayersTable({ reports, players, matches, users, isAdmin
                 </TableCell>
                 <TableCell>{player.teamName}</TableCell>
                 <TableCell>
-                    <div className="flex items-center">
-                    <Badge variant="default" className="flex items-center gap-1">
-                        {report.rating} <Star className="h-3 w-3" />
-                    </Badge>
-                    </div>
+                    <RecommendationBadge recommendation={player.recommendation} />
+                </TableCell>
+                <TableCell>
+                    {report ? (
+                        <div className="flex items-center">
+                            <Badge variant="default" className="flex items-center gap-1">
+                                {report.rating} <Star className="h-3 w-3" />
+                            </Badge>
+                        </div>
+                    ) : (
+                        <Badge variant="outline">N/A</Badge>
+                    )}
                 </TableCell>
                 {isAdmin && (
-                    <TableCell>{getScoutName(report.scoutId)}</TableCell>
+                    <TableCell>{report ? getScoutName(report.scoutId) : 'N/A'}</TableCell>
                 )}
                 <TableCell className="text-right">
-                    <Dialog>
-                    <DialogTrigger asChild>
-                        <Button variant="ghost" size="sm">
-                        <Eye className="mr-2 h-4 w-4" /> Ver Último Informe
+                    {report ? (
+                        <Dialog>
+                            <DialogTrigger asChild>
+                                <Button variant="ghost" size="sm">
+                                <Eye className="mr-2 h-4 w-4" /> Ver Último Informe
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                                <DialogHeader>
+                                <DialogTitle>Último informe de: {player.firstName} {player.lastName}</DialogTitle>
+                                <DialogDescription>
+                                    <span>Ojeador: {getScoutName(report.scoutId)}</span>
+                                    <br />
+                                    <span>Posición: {player.position}</span>
+                                    <br />
+                                    <span>Partido: {getMatchDescription(report.matchId)}</span>
+                                </DialogDescription>
+                                </DialogHeader>
+                                <div className="mt-4 rounded-md border bg-muted p-4">
+                                <p className="text-sm italic">"{report.notes}"</p>
+                                </div>
+                            </DialogContent>
+                        </Dialog>
+                    ) : (
+                        <Button variant="ghost" size="sm" disabled>
+                            <Eye className="mr-2 h-4 w-4" /> Sin informes
                         </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                        <DialogHeader>
-                        <DialogTitle>Último informe de: {player.firstName} {player.lastName}</DialogTitle>
-                        <DialogDescription>
-                            <span>Ojeador: {getScoutName(report.scoutId)}</span>
-                            <br />
-                            <span>Posición: {player.position}</span>
-                            <br />
-                            <span>Partido: {getMatchDescription(report.matchId)}</span>
-                        </DialogDescription>
-                        </DialogHeader>
-                        <div className="mt-4 rounded-md border bg-muted p-4">
-                        <p className="text-sm italic">"{report.notes}"</p>
-                        </div>
-                    </DialogContent>
-                    </Dialog>
+                    )}
                 </TableCell>
                 </TableRow>
             );
           })}
-          {filteredReports.length === 0 && (
+          {filteredPlayers.length === 0 && (
             <TableRow>
-              <TableCell colSpan={isAdmin ? 5 : 4} className="h-24 text-center">
+              <TableCell colSpan={isAdmin ? 6 : 5} className="h-24 text-center">
                 No se encontraron jugadores con los filtros actuales.
               </TableCell>
             </TableRow>
