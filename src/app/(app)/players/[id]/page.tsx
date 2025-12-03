@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { players as allPlayers, playerReports as allReports, matches as allMatches, users } from '@/lib/admin-data';
-import { Edit } from 'lucide-react';
+import { Edit, Star } from 'lucide-react';
 import PlayerProfileForm from './components/player-profile-form';
 import type { Player, Report, Match } from '@/lib/admin-types';
 import PlayerAttributesChart from './components/player-attributes-chart';
@@ -19,6 +19,7 @@ import PlayerInfoCard from './components/player-info-card';
 import PlayerRatingHistory from './components/player-rating-history';
 import PlayerReportsList from './components/player-reports-list';
 import PlayerAttributesForm from './components/player-attributes-form';
+import { Badge } from '@/components/ui/badge';
 
 
 export default function PlayerProfilePage() {
@@ -69,14 +70,22 @@ export default function PlayerProfilePage() {
                         <span className="sr-only">Editar Perfil</span>
                     </Button>
                     <div className="flex flex-col md:flex-row items-start gap-4 md:gap-6">
-                        <Image
-                            src={`https://picsum.photos/seed/${player.id}/200/280`}
-                            alt={`Foto de ${player.firstName} ${player.lastName}`}
-                            width={140}
-                            height={200}
-                            className="h-auto w-24 md:w-36 rounded-md object-cover shadow-md"
-                            data-ai-hint="person face"
-                        />
+                        <div className="flex flex-col items-center gap-2">
+                            <Image
+                                src={`https://picsum.photos/seed/${player.id}/200/280`}
+                                alt={`Foto de ${player.firstName} ${player.lastName}`}
+                                width={140}
+                                height={200}
+                                className="h-auto w-24 md:w-36 rounded-md object-cover shadow-md"
+                                data-ai-hint="person face"
+                            />
+                            {player.recommendation && player.recommendation !== 'Sin definir' && (
+                                <Badge variant="default" className="mt-2 text-center flex items-center justify-center gap-1.5">
+                                    <Star className="h-3 w-3" />
+                                    {player.recommendation}
+                                </Badge>
+                            )}
+                        </div>
                         <div className="flex-1 space-y-3 w-full">
                             <PageHeader title={`${player.firstName} ${player.lastName}`} />
                             <PlayerInfoCard player={player} />
