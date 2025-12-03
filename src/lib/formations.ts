@@ -57,19 +57,25 @@ const formationPositions: Record<Formation, { x: number; y: number }[]> = {
   ]
 };
 
-export function getPlayerPositions(formation: Formation, team: 'home' | 'away'): TacticalElement[] {
+const getTeamInitials = (name: string) => {
+    return name.split(' ').map(word => word[0]).join('').toUpperCase();
+}
+
+
+export function getPlayerPositions(formation: Formation, team: 'home' | 'away', teamName: string): TacticalElement[] {
     const positions = formationPositions[formation];
     const color = team === 'home' ? homeColor : awayColor;
-    const prefix = team === 'home' ? 'H' : 'A';
+    const prefix = getTeamInitials(teamName);
 
     return positions.map((pos, index) => {
         // Home team is on the bottom half, away team is on the top half
         const y = team === 'home' ? pos.y : 100 - pos.y;
         // For the away team, we reflect the x position as well
         const x = team === 'home' ? pos.x : 100 - pos.x;
+        const id_prefix = team === 'home' ? 'H' : 'A';
 
         return {
-            id: `${prefix}${index + 1}`,
+            id: `${id_prefix}${index + 1}`,
             label: `${prefix}${index + 1}`,
             position: { x, y },
             type: 'player',

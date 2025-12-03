@@ -1,7 +1,12 @@
+export type Team = {
+  name: string;
+  logoUrl: string;
+};
+
 export type Match = {
   id: string;
-  homeTeam: { name: string; logoUrl: string };
-  awayTeam: { name: string; logoUrl: string };
+  homeTeam: Team;
+  awayTeam: Team;
   date: string;
   competition: string;
   stadium: string;

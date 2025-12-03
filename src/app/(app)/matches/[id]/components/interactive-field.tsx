@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Save } from 'lucide-react';
-import type { TacticalElement, Formation } from '@/lib/types';
+import type { TacticalElement, Formation, Team } from '@/lib/types';
 import { formations } from '@/lib/types';
 import { getPlayerPositions } from '@/lib/formations';
 import { useToast } from '@/hooks/use-toast';
@@ -40,10 +40,12 @@ const SoccerFieldSVG = () => (
 
 interface InteractiveFieldProps {
     onPlayerClick: (player: {id: string, name: string, team: 'home' | 'away'}) => void;
+    homeTeam: Team;
+    awayTeam: Team;
     isReadOnly?: boolean;
 }
 
-export default function InteractiveField({ onPlayerClick, isReadOnly = false }: InteractiveFieldProps) {
+export default function InteractiveField({ onPlayerClick, homeTeam, awayTeam, isReadOnly = false }: InteractiveFieldProps) {
   const [homeFormation, setHomeFormation] = useState<Formation>('4-4-2');
   const [awayFormation, setAwayFormation] = useState<Formation>('4-3-3');
   const fieldRef = useRef<HTMLDivElement>(null);
@@ -58,10 +60,10 @@ export default function InteractiveField({ onPlayerClick, isReadOnly = false }: 
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    const homePlayers = getPlayerPositions(homeFormation, 'home');
-    const awayPlayers = getPlayerPositions(awayFormation, 'away');
+    const homePlayers = getPlayerPositions(homeFormation, 'home', homeTeam.name);
+    const awayPlayers = getPlayerPositions(awayFormation, 'away', awayTeam.name);
     setElements([...homePlayers, ...awayPlayers]);
-  }, [homeFormation, awayFormation]);
+  }, [homeFormation, awayFormation, homeTeam, awayTeam]);
   
   const handleSave = () => {
     setIsSaving(true);
@@ -140,7 +142,7 @@ export default function InteractiveField({ onPlayerClick, isReadOnly = false }: 
             <CardTitle>Campo Interactivo</CardTitle>
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
               <div className="flex items-center justify-between sm:justify-start gap-2">
-                <Label htmlFor="home-formation">Equipo Local</Label>
+                <Label htmlFor="home-formation">{homeTeam.name}</Label>
                 <Select onValueChange={(value: Formation) => setHomeFormation(value)} defaultValue={homeFormation} disabled={isReadOnly}>
                   <SelectTrigger id="home-formation" className="w-[120px]">
                     <SelectValue placeholder="Formación" />
@@ -151,7 +153,7 @@ export default function InteractiveField({ onPlayerClick, isReadOnly = false }: 
                 </Select>
               </div>
               <div className="flex items-center justify-between sm:justify-start gap-2">
-                <Label htmlFor="away-formation">Equipo Visitante</Label>
+                <Label htmlFor="away-formation">{awayTeam.name}</Label>
                 <Select onValueChange={(value: Formation) => setAwayFormation(value)} defaultValue={awayFormation} disabled={isReadOnly}>
                   <SelectTrigger id="away-formation" className="w-[120px]">
                     <SelectValue placeholder="Formación" />

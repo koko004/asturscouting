@@ -2,7 +2,8 @@
 
 import { useParams } from 'next/navigation';
 import { matches, users, players as allPlayers } from '@/lib/admin-data';
-import type { Player, Player as PlayerInDB } from '@/lib/admin-types';
+import type { Player } from '@/lib/types';
+import type { Player as PlayerInDB } from '@/lib/admin-types';
 import { useState, useMemo } from 'react';
 import PageHeader from '@/components/page-header';
 import InteractiveField from './components/interactive-field';
@@ -143,7 +144,12 @@ export default function MatchPage() {
       />
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-            <InteractiveField onPlayerClick={handleSelectPlayerFromField} isReadOnly={match.isClosed} />
+            <InteractiveField 
+              onPlayerClick={handleSelectPlayerFromField} 
+              homeTeam={match.homeTeam}
+              awayTeam={match.awayTeam}
+              isReadOnly={match.isClosed} 
+            />
         </div>
         <div className="lg:col-span-1">
             <PlayerList 
