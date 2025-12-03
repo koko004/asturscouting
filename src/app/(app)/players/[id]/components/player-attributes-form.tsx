@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import type { Player, PlayerPosition, Recommendation } from '@/lib/admin-types';
@@ -26,8 +26,10 @@ import {
 import { Slider } from '@/components/ui/slider';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Save } from 'lucide-react';
+import { PlusCircle, Save, Trash2 } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
 
 const formSchema = z.object({
   attributes: z.object({
@@ -47,6 +49,8 @@ const formSchema = z.object({
   position: z.enum(playerPositions),
   secondaryPosition: z.enum(playerPositions).optional(),
   recommendation: z.enum(recommendations),
+  strengths: z.array(z.object({ value: z.string().min(1, 'No puede estar vacío') })).optional(),
+  weaknesses: z.array(z.object({ value: z.string().min(1, 'No puede estar vacío') })).optional(),
 });
 
 type PlayerAttributesFormValues = z.infer<typeof formSchema>;
@@ -67,11 +71,22 @@ export default function PlayerAttributesForm({ player, onSave }: PlayerAttribute
       position: player.position,
       secondaryPosition: player.secondaryPosition,
       recommendation: player.recommendation || 'Sin definir',
+      strengths: player.strengths?.map(s => ({ value: s })) || [],
+      weaknesses: player.weaknesses?.map(w => ({ value: w })) || [],
     },
   });
 
+  const { fields: strengthsFields, append: appendStrength, remove: removeStrength } = useFieldArray({ control: form.control, name: "strengths" });
+  const { fields: weaknessesFields, append: appendWeakness, remove: removeWeakness } = useFieldArray({ control: form.control, name: "weaknesses" });
+
+
   const onSubmit = (values: PlayerAttributesFormValues) => {
-    onSave(values);
+    const saveData = {
+        ...values,
+        strengths: values.strengths?.map(s => s.value),
+        weaknesses: values.weaknesses?.map(w => w.value),
+    }
+    onSave(saveData);
     toast({
         title: 'Atributos Guardados',
         description: `Los atributos de ${player.firstName} ${player.lastName} han sido actualizados.`,
@@ -124,8 +139,8 @@ export default function PlayerAttributesForm({ player, onSave }: PlayerAttribute
 
             <Card className="lg:col-span-1">
                 <CardHeader>
-                    <CardTitle>Posiciones</CardTitle>
-                    <CardDescription>Define las posiciones del jugador.</CardDescription>
+                    <CardTitle>Posiciones y Análisis</CardTitle>
+                    <CardDescription>Define las posiciones y rasgos clave del jugador.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                     <FormField
@@ -177,6 +192,29 @@ export default function PlayerAttributesForm({ player, onSave }: PlayerAttribute
                             </FormItem>
                         )}
                     />
+                    <Separator />
+                     <div>
+                        <FormLabel>Fortalezas</FormLabel>
+                        <div className="mt-2 space-y-2">
+                            {strengthsFields.map((field, index) => (
+                            <FormField key={field.id} control={form.control} name={`strengths.${index}.value`} render={({ field }) => (
+                                <FormItem className="flex items-center gap-2"><FormControl><Input {...field} placeholder={`Fortaleza ${index + 1}`} /></FormControl><Button type="button" variant="ghost" size="icon" onClick={() => removeStrength(index)}><Trash2 className="h-4 w-4 text-destructive" /></Button><FormMessage /></FormItem>
+                            )}/>
+                            ))}
+                        </div>
+                        <Button type="button" size="sm" variant="outline" className="mt-2" onClick={() => appendStrength({ value: "" })}><PlusCircle className="mr-2 h-4 w-4" /> Añadir Fortaleza</Button>
+                    </div>
+                    <div>
+                        <FormLabel>Debilidades</FormLabel>
+                        <div className="mt-2 space-y-2">
+                            {weaknessesFields.map((field, index) => (
+                            <FormField key={field.id} control={form.control} name={`weaknesses.${index}.value`} render={({ field }) => (
+                                <FormItem className="flex items-center gap-2"><FormControl><Input {...field} placeholder={`Debilidad ${index + 1}`} /></FormControl><Button type="button" variant="ghost" size="icon" onClick={() => removeWeakness(index)}><Trash2 className="h-4 w-4 text-destructive" /></Button><FormMessage /></FormItem>
+                            )}/>
+                            ))}
+                        </div>
+                        <Button type="button" size="sm" variant="outline" className="mt-2" onClick={() => appendWeakness({ value: "" })}><PlusCircle className="mr-2 h-4 w-4" /> Añadir Debilidad</Button>
+                    </div>
                 </CardContent>
             </Card>
             <Card className="lg:col-span-1">

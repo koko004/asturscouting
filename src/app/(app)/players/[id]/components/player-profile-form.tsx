@@ -32,8 +32,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { PlusCircle, Trash2 } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
 
 const formSchema = z.object({
   firstName: z.string().min(2, 'El nombre debe tener al menos 2 caracteres.'),
@@ -46,8 +44,6 @@ const formSchema = z.object({
   height: z.coerce.number().int().min(100, 'La altura no es válida.'),
   weight: z.coerce.number().int().min(40, 'El peso no es válido.'),
   preferredFoot: z.enum(['Left', 'Right', 'Both']),
-  strengths: z.array(z.object({ value: z.string().min(1, 'No puede estar vacío') })).optional(),
-  weaknesses: z.array(z.object({ value: z.string().min(1, 'No puede estar vacío') })).optional(),
 });
 
 type PlayerFormValues = z.infer<typeof formSchema>;
@@ -68,24 +64,12 @@ export default function PlayerProfileForm({
   
   const form = useForm<PlayerFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: player ? { 
-      ...player,
-      strengths: player.strengths?.map(s => ({ value: s })) || [],
-      weaknesses: player.weaknesses?.map(w => ({ value: w })) || [],
-    } : undefined,
+    defaultValues: player ? player : undefined,
   });
-
-  const { fields: strengthsFields, append: appendStrength, remove: removeStrength } = useFieldArray({ control: form.control, name: "strengths" });
-  const { fields: weaknessesFields, append: appendWeakness, remove: removeWeakness } = useFieldArray({ control: form.control, name: "weaknesses" });
-
 
   React.useEffect(() => {
     if (isOpen && player) {
-      form.reset({ 
-        ...player,
-        strengths: player.strengths?.map(s => ({ value: s })) || [],
-        weaknesses: player.weaknesses?.map(w => ({ value: w })) || [],
-      });
+      form.reset(player);
     }
   }, [isOpen, player, form]);
 
@@ -94,8 +78,6 @@ export default function PlayerProfileForm({
       onSave({
         ...player,
         ...values,
-        strengths: values.strengths?.map(s => s.value),
-        weaknesses: values.weaknesses?.map(w => w.value),
       });
     }
     onOpenChange(false);
@@ -147,34 +129,6 @@ export default function PlayerProfileForm({
                     <FormItem><FormLabel>Pie Preferido</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="Left">Izquierdo</SelectItem><SelectItem value="Right">Derecho</SelectItem><SelectItem value="Both">Ambos</SelectItem></SelectContent></Select><FormMessage /></FormItem>
                 )}/>
             </div>
-
-            <Separator />
-            
-            <div>
-              <FormLabel>Fortalezas</FormLabel>
-              <div className="mt-2 space-y-2">
-                {strengthsFields.map((field, index) => (
-                  <FormField key={field.id} control={form.control} name={`strengths.${index}.value`} render={({ field }) => (
-                    <FormItem className="flex items-center gap-2"><FormControl><Input {...field} placeholder={`Fortaleza ${index + 1}`} /></FormControl><Button type="button" variant="ghost" size="icon" onClick={() => removeStrength(index)}><Trash2 className="h-4 w-4 text-destructive" /></Button><FormMessage /></FormItem>
-                  )}/>
-                ))}
-              </div>
-              <Button type="button" size="sm" variant="outline" className="mt-2" onClick={() => appendStrength({ value: "" })}><PlusCircle className="mr-2 h-4 w-4" /> Añadir Fortaleza</Button>
-            </div>
-            
-            <div>
-              <FormLabel>Debilidades</FormLabel>
-              <div className="mt-2 space-y-2">
-                {weaknessesFields.map((field, index) => (
-                  <FormField key={field.id} control={form.control} name={`weaknesses.${index}.value`} render={({ field }) => (
-                    <FormItem className="flex items-center gap-2"><FormControl><Input {...field} placeholder={`Debilidad ${index + 1}`} /></FormControl><Button type="button" variant="ghost" size="icon" onClick={() => removeWeakness(index)}><Trash2 className="h-4 w-4 text-destructive" /></Button><FormMessage /></FormItem>
-                  )}/>
-                ))}
-              </div>
-              <Button type="button" size="sm" variant="outline" className="mt-2" onClick={() => appendWeakness({ value: "" })}><PlusCircle className="mr-2 h-4 w-4" /> Añadir Debilidad</Button>
-            </div>
-
-
             <DialogFooter>
               <DialogClose asChild><Button type="button" variant="outline">Cancelar</Button></DialogClose>
               <Button type="submit">Guardar Cambios</Button>
