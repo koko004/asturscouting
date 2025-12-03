@@ -5,18 +5,18 @@ import { useState, useMemo } from 'react';
 import PageHeader from '@/components/page-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Image from 'next/image';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { players as allPlayers, playerReports as allReports, matches as allMatches, users } from '@/lib/admin-data';
 import { Edit } from 'lucide-react';
 import PlayerProfileForm from './components/player-profile-form';
-import type { Player, Report } from '@/lib/admin-types';
+import type { Player, Report, Match } from '@/lib/admin-types';
 import PlayerAttributesChart from './components/player-attributes-chart';
 import PlayerStatsSummary from './components/player-stats-summary';
 import PlayerStrengthsWeaknesses from './components/player-strengths-weaknesses';
 import PlayerPositionMap from './components/player-position-map';
 import PlayerInfoCard from './components/player-info-card';
+import PlayerRatingHistory from './components/player-rating-history';
 
 
 export default function PlayerProfilePage() {
@@ -29,19 +29,24 @@ export default function PlayerProfilePage() {
     const [player, setPlayer] = useState(allPlayers.find(p => p.id === playerId));
     
     const playerReports = useMemo(() => {
+        if (!player) return [];
         return allReports
             .filter(r => r.playerId === playerId)
             .map(report => {
                 const match = allMatches.find(m => m.id === report.matchId);
                 const scout = users.find(u => u.id === report.scoutId);
+                const opponent = match?.homeTeam.name === player.teamName ? match?.awayTeam : match?.homeTeam;
+                
                 return {
                     ...report,
                     matchDescription: match ? `${match.homeTeam.name} vs ${match.awayTeam.name}` : 'Partido Desconocido',
+                    matchDate: match?.date || new Date().toISOString(),
                     scoutName: scout?.name || 'Desconocido',
+                    opponent: opponent || { name: 'Desconocido', logoUrl: '' },
                 };
             })
-            .sort((a, b) => new Date(b.id).getTime() - new Date(a.id).getTime());
-    }, [playerId]);
+            .sort((a, b) => new Date(b.matchDate).getTime() - new Date(a.matchDate).getTime());
+    }, [playerId, player]);
 
     const averageRating = useMemo(() => {
         if (playerReports.length === 0) return 0;
@@ -92,6 +97,7 @@ export default function PlayerProfilePage() {
                 <TabsContent value="summary" className="mt-6">
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div className="lg:col-span-2 space-y-6">
+                             <PlayerRatingHistory reports={playerReports} averageRating={averageRating} />
                              <div className="flex flex-col sm:flex-row gap-6">
                                 <PlayerAttributesChart attributes={player.attributes} />
                                 <PlayerPositionMap position={player.position} />
