@@ -3,6 +3,9 @@
 import type { Report } from "@/lib/admin-types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import { Lock } from "lucide-react";
 
 interface PlayerReportsListProps {
     reports: Report[];
@@ -21,10 +24,26 @@ export default function PlayerReportsList({ reports }: PlayerReportsListProps) {
                         {reports.map((report: Report) => (
                             <Card key={report.id}>
                                 <CardHeader>
-                                    <CardTitle className="text-base">{report.matchDescription}</CardTitle>
-                                    <CardDescription>
-                                        Ojeador: {report.scoutName} | Valoración: {report.rating}/10
-                                    </CardDescription>
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <CardTitle className="text-base">{report.matchDescription}</CardTitle>
+                                            <CardDescription>
+                                                Ojeador: {report.scoutName} | Valoración: {report.rating}/10
+                                            </CardDescription>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            {report.isClosed && <Lock className="h-4 w-4 text-muted-foreground" title="Informe cerrado" />}
+                                            <Badge
+                                                className={cn(
+                                                report.isClosed
+                                                    ? 'bg-red-600 text-white'
+                                                    : 'bg-green-600 text-white'
+                                                )}
+                                            >
+                                                {report.isClosed ? 'Cerrado' : 'Abierto'}
+                                            </Badge>
+                                        </div>
+                                    </div>
                                 </CardHeader>
                                 <CardContent>
                                     <p className="italic">"{report.notes}"</p>

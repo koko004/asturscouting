@@ -67,10 +67,14 @@ export type Player = {
 export type PlayerReport = {
     id: string;
     playerId: string;
-    matchId: string;
+    matchId?: string; // Optional now
     scoutId: string;
     rating: number; // 1-10
     notes: string;
+    // Fields for when a match isn't pre-defined
+    opponentTeam?: string;
+    competition?: string;
+    isClosed: boolean;
 }
 
 export type Report = PlayerReport & {

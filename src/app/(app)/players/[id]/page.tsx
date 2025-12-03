@@ -8,9 +8,9 @@ import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { players as allPlayers, playerReports as allReports, matches as allMatches, users } from '@/lib/admin-data';
-import { Edit, Eye, Target, CheckCircle2, XCircle } from 'lucide-react';
+import { Edit, Eye, Target, CheckCircle2, XCircle, PlusCircle } from 'lucide-react';
 import PlayerProfileForm from './components/player-profile-form';
-import type { Player, Report, Match, Recommendation } from '@/lib/admin-types';
+import type { Player, Report, Match, Recommendation, PlayerReport } from '@/lib/admin-types';
 import PlayerAttributesChart from './components/player-attributes-chart';
 import PlayerStatsSummary from './components/player-stats-summary';
 import PlayerStrengthsWeaknesses from './components/player-strengths-weaknesses';
@@ -21,21 +21,22 @@ import PlayerReportsList from './components/player-reports-list';
 import PlayerAttributesForm from './components/player-attributes-form';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import PlayerReportForm from './components/player-report-form';
 
 
 export default function PlayerProfilePage() {
     const params = useParams();
     const playerId = typeof params.id === 'string' ? params.id : '';
 
-    const [isFormOpen, setIsFormOpen] = useState(false);
+    const [isProfileFormOpen, setProfileFormOpen] = useState(false);
+    const [isReportFormOpen, setReportFormOpen] = useState(false);
     
-    // In a real app, you'd fetch this data, but for now we'll filter the mock data.
     const [player, setPlayer] = useState(allPlayers.find(p => p.id === playerId));
+    const [playerReports, setPlayerReports] = useState(allReports.filter(r => r.playerId === playerId));
     
-    const playerReports = useMemo(() => {
+    const processedReports = useMemo(() => {
         if (!player) return [];
-        return allReports
-            .filter(r => r.playerId === playerId)
+        return playerReports
             .map(report => {
                 const match = allMatches.find(m => m.id === report.matchId);
                 const scout = users.find(u => u.id === report.scoutId);
@@ -43,14 +44,14 @@ export default function PlayerProfilePage() {
                 
                 return {
                     ...report,
-                    matchDescription: match ? `${match.homeTeam.name} vs ${match.awayTeam.name}` : 'Partido Desconocido',
+                    matchDescription: match ? `${match.homeTeam.name} vs ${match.awayTeam.name}` : report.opponentTeam || 'Partido Desconocido',
                     matchDate: match?.date || new Date().toISOString(),
                     scoutName: scout?.name || 'Desconocido',
-                    opponent: opponent || { name: 'Desconocido', logoUrl: '' },
+                    opponent: opponent || { name: report.opponentTeam || 'Desconocido', logoUrl: `https://picsum.photos/seed/${report.opponentTeam}/40` },
                 };
             })
             .sort((a, b) => new Date(b.matchDate).getTime() - new Date(a.matchDate).getTime());
-    }, [playerId, player]);
+    }, [player, playerReports]);
 
 
     if (!player) {
@@ -60,6 +61,16 @@ export default function PlayerProfilePage() {
     const handleSavePlayer = (updatedPlayer: Partial<Player>) => {
         setPlayer(prev => prev ? { ...prev, ...updatedPlayer } : undefined);
         // Here you would also update the allPlayers array or send to a backend
+    };
+    
+    const handleSaveReport = (report: Omit<PlayerReport, 'id' | 'playerId' | 'scoutId'>) => {
+        const newReport: PlayerReport = {
+            id: `pr${Date.now()}`,
+            playerId: player.id,
+            scoutId: 'u2', // In a real app, this would be the current user's ID
+            ...report,
+        };
+        setPlayerReports(prev => [...prev, newReport]);
     };
 
     const getRecommendationBadge = (recommendation: Recommendation) => {
@@ -87,10 +98,16 @@ export default function PlayerProfilePage() {
         <div className="flex flex-col gap-6">
             <Card>
                 <CardContent className="relative p-4 md:p-6">
-                     <Button onClick={() => setIsFormOpen(true)} size="icon" variant="ghost" className="absolute top-2 right-2 h-8 w-8">
-                        <Edit className="h-4 w-4" />
-                        <span className="sr-only">Editar Perfil</span>
-                    </Button>
+                     <div className="absolute top-2 right-2 flex gap-1">
+                        <Button onClick={() => setReportFormOpen(true)} size="sm" variant="outline">
+                            <PlusCircle className="mr-2 h-4 w-4" />
+                            Crear Informe
+                        </Button>
+                        <Button onClick={() => setProfileFormOpen(true)} size="icon" variant="ghost" className="h-8 w-8">
+                            <Edit className="h-4 w-4" />
+                            <span className="sr-only">Editar Perfil</span>
+                        </Button>
+                    </div>
                     <div className="flex flex-col md:flex-row items-start gap-4 md:gap-6">
                         <div className="flex flex-col items-center gap-2">
                             <Image
@@ -106,7 +123,7 @@ export default function PlayerProfilePage() {
                         <div className="flex-1 space-y-3 w-full">
                             <PageHeader title={`${player.firstName} ${player.lastName}`} />
                             <PlayerInfoCard player={player} />
-                            <PlayerRatingHistory reports={playerReports} />
+                            <PlayerRatingHistory reports={processedReports} />
                         </div>
                     </div>
                 </CardContent>
@@ -116,7 +133,7 @@ export default function PlayerProfilePage() {
                 <TabsList className="grid w-full grid-cols-3">
                     <TabsTrigger value="summary">Resumen</TabsTrigger>
                     <TabsTrigger value="attributes">Atributos</TabsTrigger>
-                    <TabsTrigger value="reports">Informes ({playerReports.length})</TabsTrigger>
+                    <TabsTrigger value="reports">Informes ({processedReports.length})</TabsTrigger>
                 </TabsList>
                 <TabsContent value="summary" className="mt-6">
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -136,15 +153,20 @@ export default function PlayerProfilePage() {
                     <PlayerAttributesForm player={player} onSave={handleSavePlayer} />
                 </TabsContent>
                 <TabsContent value="reports" className="mt-6">
-                    <PlayerReportsList reports={playerReports} />
+                    <PlayerReportsList reports={processedReports} />
                 </TabsContent>
             </Tabs>
             
             <PlayerProfileForm
-                isOpen={isFormOpen}
-                onOpenChange={setIsFormOpen}
+                isOpen={isProfileFormOpen}
+                onOpenChange={setProfileFormOpen}
                 player={player}
                 onSave={handleSavePlayer}
+            />
+            <PlayerReportForm
+                isOpen={isReportFormOpen}
+                onOpenChange={setReportFormOpen}
+                onSave={handleSaveReport}
             />
         </div>
     );

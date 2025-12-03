@@ -146,7 +146,8 @@ export const playerReports: PlayerReport[] = [
         matchId: 'm2',
         scoutId: 'u3',
         rating: 8,
-        notes: 'Muy rápido y con gran definición. Buen juego aéreo.'
+        notes: 'Muy rápido y con gran definición. Buen juego aéreo.',
+        isClosed: true,
     },
     { 
         id: 'pr2',
@@ -154,7 +155,8 @@ export const playerReports: PlayerReport[] = [
         matchId: 'm2',
         scoutId: 'u3',
         rating: 7,
-        notes: 'Gran visión de juego y pases precisos. Le falta algo de físico.'
+        notes: 'Gran visión de juego y pases precisos. Le falta algo de físico.',
+        isClosed: true,
     },
     {
         id: 'pr3',
@@ -162,7 +164,8 @@ export const playerReports: PlayerReport[] = [
         matchId: 'm1',
         scoutId: 'u2',
         rating: 9,
-        notes: 'Jugador diferencial, con mucho talento y capacidad para desequilibrar. El mejor del partido.'
+        notes: 'Jugador diferencial, con mucho talento y capacidad para desequilibrar. El mejor del partido.',
+        isClosed: false,
     },
     {
         id: 'pr4',
@@ -170,6 +173,7 @@ export const playerReports: PlayerReport[] = [
         matchId: 'm1',
         scoutId: 'u2',
         rating: 8,
-        notes: 'Delantero muy completo. Buen remate con ambas piernas y gran capacidad de lucha.'
+        notes: 'Delantero muy completo. Buen remate con ambas piernas y gran capacidad de lucha.',
+        isClosed: false,
     }
 ];
