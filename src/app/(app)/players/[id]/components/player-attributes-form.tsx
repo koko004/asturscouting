@@ -217,7 +217,20 @@ export default function PlayerAttributesForm({ player, onSave }: PlayerAttribute
                     </div>
                 </CardContent>
             </Card>
-            <Card className="lg:col-span-1">
+             <Card className="lg:col-span-1">
+                <CardHeader>
+                    <CardTitle>Personalidad y Psicología</CardTitle>
+                    <CardDescription>Valora los atributos mentales y de actitud.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    {renderSlider('psychology.leadership', 'Liderazgo')}
+                    {renderSlider('psychology.teamwork', 'Trabajo en Equipo')}
+                    {renderSlider('psychology.aggression', 'Agresividad')}
+                    {renderSlider('psychology.determination', 'Determinación')}
+                </CardContent>
+            </Card>
+            
+            <Card className="lg:col-span-3">
                 <CardHeader>
                     <CardTitle>Recomendación Final</CardTitle>
                     <CardDescription>Veredicto del ojeador.</CardDescription>
@@ -251,19 +264,6 @@ export default function PlayerAttributesForm({ player, onSave }: PlayerAttribute
                             </FormItem>
                         )}
                     />
-                </CardContent>
-            </Card>
-            
-            <Card className="lg:col-span-3">
-                <CardHeader>
-                    <CardTitle>Personalidad y Psicología</CardTitle>
-                    <CardDescription>Valora los atributos mentales y de actitud.</CardDescription>
-                </CardHeader>
-                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                    {renderSlider('psychology.leadership', 'Liderazgo')}
-                    {renderSlider('psychology.teamwork', 'Trabajo en Equipo')}
-                    {renderSlider('psychology.aggression', 'Agresividad')}
-                    {renderSlider('psychology.determination', 'Determinación')}
                 </CardContent>
             </Card>
         </div>
