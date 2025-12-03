@@ -67,7 +67,11 @@ export default function PlayerProfilePage() {
     return (
         <div className="flex flex-col gap-6">
             <Card>
-                <CardContent className="pt-6">
+                <CardContent className="relative pt-6">
+                     <Button onClick={() => setIsFormOpen(true)} size="icon" variant="ghost" className="absolute top-4 right-4 h-8 w-8">
+                        <Edit className="h-4 w-4" />
+                        <span className="sr-only">Editar Perfil</span>
+                    </Button>
                     <div className="flex flex-col md:flex-row items-center gap-6">
                         <Image
                             src={`https://picsum.photos/seed/${player.id}/200/280`}
@@ -77,14 +81,11 @@ export default function PlayerProfilePage() {
                             className="h-auto w-36 rounded-md object-cover shadow-md"
                             data-ai-hint="person face"
                         />
-                        <div className="flex-1 text-center md:text-left">
+                        <div className="flex-1 space-y-4 text-center md:text-left w-full">
                             <PageHeader title={`${player.firstName} ${player.lastName}`} />
-                            <PlayerInfoCard player={player} averageRating={averageRating} />
+                            <PlayerInfoCard player={player} />
+                            <PlayerRatingHistory reports={playerReports} />
                         </div>
-                        <Button onClick={() => setIsFormOpen(true)} size="sm">
-                            <Edit className="mr-2 h-4 w-4" />
-                            Editar Perfil
-                        </Button>
                     </div>
                 </CardContent>
             </Card>
@@ -97,7 +98,6 @@ export default function PlayerProfilePage() {
                 <TabsContent value="summary" className="mt-6">
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div className="lg:col-span-2 space-y-6">
-                             <PlayerRatingHistory reports={playerReports} averageRating={averageRating} />
                              <div className="flex flex-col sm:flex-row gap-6">
                                 <PlayerAttributesChart attributes={player.attributes} />
                                 <PlayerPositionMap position={player.position} />
