@@ -8,9 +8,9 @@ import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { players as allPlayers, playerReports as allReports, matches as allMatches, users } from '@/lib/admin-data';
-import { Edit, Star } from 'lucide-react';
+import { Edit, Eye, Target, CheckCircle2, XCircle } from 'lucide-react';
 import PlayerProfileForm from './components/player-profile-form';
-import type { Player, Report, Match } from '@/lib/admin-types';
+import type { Player, Report, Match, Recommendation } from '@/lib/admin-types';
 import PlayerAttributesChart from './components/player-attributes-chart';
 import PlayerStatsSummary from './components/player-stats-summary';
 import PlayerStrengthsWeaknesses from './components/player-strengths-weaknesses';
@@ -20,6 +20,7 @@ import PlayerRatingHistory from './components/player-rating-history';
 import PlayerReportsList from './components/player-reports-list';
 import PlayerAttributesForm from './components/player-attributes-form';
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 
 export default function PlayerProfilePage() {
@@ -60,6 +61,27 @@ export default function PlayerProfilePage() {
         setPlayer(prev => prev ? { ...prev, ...updatedPlayer } : undefined);
         // Here you would also update the allPlayers array or send to a backend
     };
+
+    const getRecommendationBadge = (recommendation: Recommendation) => {
+        const config = {
+            'Seleccionar': { icon: CheckCircle2, className: 'bg-green-600 hover:bg-green-700 text-white' },
+            'Descartar': { icon: XCircle, className: 'bg-red-600 hover:bg-red-700 text-white' },
+            'Seguimiento especial': { icon: Target, className: 'bg-yellow-500 hover:bg-yellow-600 text-white' },
+            'Seguir observando': { icon: Eye, className: 'bg-blue-500 hover:bg-blue-600 text-white' },
+            'Sin definir': { icon: null, className: '' }
+        };
+
+        const { icon: Icon, className } = config[recommendation] || config['Sin definir'];
+
+        if (!Icon) return null;
+
+        return (
+            <Badge className={cn("mt-2 text-center flex items-center justify-center gap-1.5", className)}>
+                <Icon className="h-3 w-3" />
+                {recommendation}
+            </Badge>
+        );
+    }
     
     return (
         <div className="flex flex-col gap-6">
@@ -79,12 +101,7 @@ export default function PlayerProfilePage() {
                                 className="h-auto w-24 md:w-36 rounded-md object-cover shadow-md"
                                 data-ai-hint="person face"
                             />
-                            {player.recommendation && player.recommendation !== 'Sin definir' && (
-                                <Badge variant="default" className="mt-2 text-center flex items-center justify-center gap-1.5">
-                                    <Star className="h-3 w-3" />
-                                    {player.recommendation}
-                                </Badge>
-                            )}
+                            {player.recommendation && getRecommendationBadge(player.recommendation)}
                         </div>
                         <div className="flex-1 space-y-3 w-full">
                             <PageHeader title={`${player.firstName} ${player.lastName}`} />
