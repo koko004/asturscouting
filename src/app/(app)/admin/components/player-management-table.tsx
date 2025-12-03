@@ -19,14 +19,37 @@ import {
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
+import { MoreHorizontal } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+
 
 interface PlayerManagementTableProps {
   players: Player[];
   users: User[];
   onAssignScout: (playerId: string, scoutId: string) => void;
+  onEdit: (player: Player) => void;
+  onDelete: (playerId: string) => void;
 }
 
-export default function PlayerManagementTable({ players, users, onAssignScout }: PlayerManagementTableProps) {
+export default function PlayerManagementTable({ players, users, onAssignScout, onEdit, onDelete }: PlayerManagementTableProps) {
   
   const scouts = users.filter(u => u.role === 'scout');
 
@@ -39,6 +62,7 @@ export default function PlayerManagementTable({ players, users, onAssignScout }:
           <TableHead>Posición</TableHead>
           <TableHead>Edad</TableHead>
           <TableHead className="w-[250px]">Ojeador Asignado</TableHead>
+          <TableHead className="text-right">Acciones</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -82,6 +106,40 @@ export default function PlayerManagementTable({ players, users, onAssignScout }:
                   ))}
                 </SelectContent>
               </Select>
+            </TableCell>
+             <TableCell className="text-right">
+              <AlertDialog>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                      <MoreHorizontal className="h-4 w-4" />
+                      <span className="sr-only">Acciones</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => onEdit(player)}>Editar</DropdownMenuItem>
+                    <AlertDialogTrigger asChild>
+                      <DropdownMenuItem className="text-destructive focus:text-destructive">
+                        Eliminar
+                      </DropdownMenuItem>
+                    </AlertDialogTrigger>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                        Esta acción no se puede deshacer. Esto eliminará permanentemente al jugador.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => onDelete(player.id)}>Sí, eliminar</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </TableCell>
           </TableRow>
         ))}
