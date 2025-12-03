@@ -23,7 +23,9 @@ export type Match = {
 };
 
 
-export type PlayerPosition = 'Portero (POR)' | 'Defensa (DEF)' | 'Centrocampista (CEN)' | 'Delantero (DEL)';
+export const playerPositions = ['Portero (POR)', 'Defensa (DEF)', 'Centrocampista (CEN)', 'Delantero (DEL)'] as const;
+export type PlayerPosition = (typeof playerPositions)[number];
+
 
 export type Player = {
     id: string;
@@ -32,6 +34,7 @@ export type Player = {
     nationality: string;
     age: number;
     teamName: string;
+    teamLogoUrl?: string;
     position: PlayerPosition;
     jerseyNumber: number;
     height: number; // in cm
@@ -55,4 +58,9 @@ export type PlayerReport = {
     scoutId: string;
     rating: number; // 1-10
     notes: string;
+}
+
+export type Report = PlayerReport & {
+    matchDescription: string;
+    scoutName: string;
 }

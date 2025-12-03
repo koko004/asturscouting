@@ -6,7 +6,7 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import type { Player } from '@/lib/admin-types';
-import { playerPositions } from '@/lib/types';
+import { playerPositions } from '@/lib/admin-types';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
