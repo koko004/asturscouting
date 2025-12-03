@@ -1,4 +1,3 @@
-
 'use client';
 import { PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, RadarChart } from "recharts"
 
@@ -39,17 +38,17 @@ export default function PlayerAttributesChart({ attributes }: PlayerAttributesCh
     } satisfies Parameters<typeof ChartContainer>[0]["config"]
 
     return (
-        <Card>
+        <Card className="flex-1">
             <CardHeader>
                 <CardTitle>Resumen de Atributos</CardTitle>
                 <CardDescription>
                     Visualización de las habilidades clave del jugador.
                 </CardDescription>
             </CardHeader>
-            <CardContent className="pb-0">
+            <CardContent className="pb-0 flex justify-center items-center">
                  <ChartContainer
                     config={chartConfig}
-                    className="mx-auto aspect-square max-h-[300px]"
+                    className="mx-auto aspect-square w-full max-w-[250px]"
                     >
                     <RadarChart data={chartData}>
                         <ChartTooltip

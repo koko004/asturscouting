@@ -15,6 +15,7 @@ import type { Player } from '@/lib/admin-types';
 import PlayerAttributesChart from './components/player-attributes-chart';
 import PlayerStatsSummary from './components/player-stats-summary';
 import PlayerStrengthsWeaknesses from './components/player-strengths-weaknesses';
+import PlayerPositionMap from './components/player-position-map';
 
 
 export default function PlayerProfilePage() {
@@ -78,7 +79,10 @@ export default function PlayerProfilePage() {
                 <TabsContent value="summary" className="mt-6">
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         <div className="lg:col-span-2 space-y-6">
-                           <PlayerAttributesChart attributes={player.attributes} />
+                            <div className="flex flex-col sm:flex-row gap-6">
+                                <PlayerAttributesChart attributes={player.attributes} />
+                                <PlayerPositionMap position={player.position} />
+                            </div>
                         </div>
                         <div className="lg:col-span-1 space-y-6">
                             <PlayerStatsSummary player={player} />
