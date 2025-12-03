@@ -3,7 +3,7 @@
 
 import PageHeader from '@/components/page-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { matches as allMatches, playerReports as allPlayerReports, users } from '@/lib/admin-data';
+import { matches as allMatches, playerReports as allPlayerReports, users, players as allPlayers } from '@/lib/admin-data';
 import MyReportsTable from './components/my-reports-table';
 
 // For demo purposes, we'll hardcode the current user's ID.
@@ -30,9 +30,10 @@ export default function MyReportsPage() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <MyReportsTable reports={myReports} matches={allMatches} />
+                    <MyReportsTable reports={myReports} matches={allMatches} players={allPlayers} />
                 </CardContent>
             </Card>
         </div>
     );
 }
+

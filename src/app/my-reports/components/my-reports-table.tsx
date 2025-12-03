@@ -2,7 +2,7 @@
 'use client';
 
 import { useState } from 'react';
-import type { PlayerReport, Match } from '@/lib/admin-types';
+import type { PlayerReport, Match, Player } from '@/lib/admin-types';
 import {
   Table,
   TableBody,
@@ -34,9 +34,10 @@ import {
 interface MyReportsTableProps {
   reports: PlayerReport[];
   matches: Match[];
+  players: Player[];
 }
 
-export default function MyReportsTable({ reports, matches }: MyReportsTableProps) {
+export default function MyReportsTable({ reports, matches, players }: MyReportsTableProps) {
   const [filterMatch, setFilterMatch] = useState('all');
   const [filterTeam, setFilterTeam] = useState('');
   const [filterPlayer, setFilterPlayer] = useState('');
@@ -48,9 +49,11 @@ export default function MyReportsTable({ reports, matches }: MyReportsTableProps
   };
 
   const filteredReports = reports.filter(report => {
+    const player = players.find(p => p.id === report.playerId);
+    if (!player) return false;
     const matchFilterPassed = filterMatch === 'all' || report.matchId === filterMatch;
-    const teamFilterPassed = !filterTeam || report.teamName.toLowerCase().includes(filterTeam.toLowerCase());
-    const playerFilterPassed = !filterPlayer || report.playerName.toLowerCase().includes(filterPlayer.toLowerCase());
+    const teamFilterPassed = !filterTeam || player.teamName.toLowerCase().includes(filterTeam.toLowerCase());
+    const playerFilterPassed = !filterPlayer || `${player.firstName} ${player.lastName}`.toLowerCase().includes(filterPlayer.toLowerCase());
     return matchFilterPassed && teamFilterPassed && playerFilterPassed;
   });
 
@@ -71,7 +74,7 @@ export default function MyReportsTable({ reports, matches }: MyReportsTableProps
           </SelectContent>
         </Select>
         <Input
-          placeholder="Filtrar por equipo..."
+          placeholder="Filtrar por club..."
           value={filterTeam}
           onChange={(e) => setFilterTeam(e.target.value)}
           className="sm:w-[200px]"
@@ -93,11 +96,14 @@ export default function MyReportsTable({ reports, matches }: MyReportsTableProps
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredReports.map(report => (
-            <TableRow key={report.id}>
+          {filteredReports.map(report => {
+            const player = players.find(p => p.id === report.playerId);
+            if (!player) return null;
+            return (
+              <TableRow key={report.id}>
               <TableCell>
-                <div className="font-medium">{report.playerName}</div>
-                <div className="text-sm text-muted-foreground">{report.teamName}</div>
+                <div className="font-medium">{player.firstName} {player.lastName}</div>
+                <div className="text-sm text-muted-foreground">{player.teamName}</div>
               </TableCell>
               <TableCell>{getMatchDescription(report.matchId)}</TableCell>
               <TableCell>
@@ -116,10 +122,11 @@ export default function MyReportsTable({ reports, matches }: MyReportsTableProps
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
-                      <DialogTitle>Notas de: {report.playerName}</DialogTitle>
+                      <DialogTitle>Notas de: {player.firstName} {player.lastName}</DialogTitle>
                       <DialogDescription>
-                        Posición: {report.position} <br />
-                        Partido: {getMatchDescription(report.matchId)}
+                        <span>Posición: {player.position}</span>
+                        <br />
+                        <span>Partido: {getMatchDescription(report.matchId)}</span>
                       </DialogDescription>
                     </DialogHeader>
                     <div className="mt-4 rounded-md border bg-muted p-4">
@@ -129,7 +136,8 @@ export default function MyReportsTable({ reports, matches }: MyReportsTableProps
                 </Dialog>
               </TableCell>
             </TableRow>
-          ))}
+            )
+          })}
           {filteredReports.length === 0 && (
             <TableRow>
               <TableCell colSpan={4} className="text-center">

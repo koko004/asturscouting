@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import type { PlayerReport, Match, Player } from '@/lib/admin-types';
 import {
   Table,
@@ -48,14 +48,17 @@ export default function MyReportsTable({ reports, matches, players }: MyReportsT
     return `${match.homeTeam.name} vs ${match.awayTeam.name}`;
   };
 
-  const filteredReports = reports.filter(report => {
-    const player = players.find(p => p.id === report.playerId);
-    if (!player) return false;
-    const matchFilterPassed = filterMatch === 'all' || report.matchId === filterMatch;
-    const teamFilterPassed = !filterTeam || player.teamName.toLowerCase().includes(filterTeam.toLowerCase());
-    const playerFilterPassed = !filterPlayer || `${player.firstName} ${player.lastName}`.toLowerCase().includes(filterPlayer.toLowerCase());
-    return matchFilterPassed && teamFilterPassed && playerFilterPassed;
-  });
+  const filteredReports = useMemo(() => {
+    return reports.filter(report => {
+        const player = players.find(p => p.id === report.playerId);
+        if (!player) return false;
+        const matchFilterPassed = filterMatch === 'all' || report.matchId === filterMatch;
+        const teamFilterPassed = !filterTeam || player.teamName.toLowerCase().includes(filterTeam.toLowerCase());
+        const playerFilterPassed = !filterPlayer || `${player.firstName} ${player.lastName}`.toLowerCase().includes(filterPlayer.toLowerCase());
+        return matchFilterPassed && teamFilterPassed && playerFilterPassed;
+    });
+  }, [reports, players, filterMatch, filterTeam, filterPlayer]);
+
 
   return (
     <div>
