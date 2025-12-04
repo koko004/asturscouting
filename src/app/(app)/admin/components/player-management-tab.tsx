@@ -8,11 +8,15 @@ import type { Player, User } from '@/lib/admin-types';
 import { players as initialPlayers, users } from '@/lib/admin-data';
 import PlayerManagementTable from './player-management-table';
 import PlayerForm from './player-form';
+import RequestReportForm from './request-report-form';
+import { useToast } from '@/hooks/use-toast';
 
 export default function PlayerManagementTab() {
   const [players, setPlayers] = useState<Player[]>(initialPlayers);
   const [isPlayerFormOpen, setPlayerFormOpen] = useState(false);
+  const [isRequestReportFormOpen, setRequestReportFormOpen] = useState(false);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
+  const { toast } = useToast();
 
   const handleSavePlayer = (playerData: Omit<Player, 'id'>) => {
     if (selectedPlayer) {
@@ -47,6 +51,25 @@ export default function PlayerManagementTab() {
   const handleAssignScout = (playerId: string, scoutId: string | 'unassigned') => {
     setPlayers(players.map(p => p.id === playerId ? { ...p, assignedScoutId: scoutId === 'unassigned' ? undefined : scoutId } : p));
   };
+
+  const handleRequestReport = (player: Player) => {
+    setSelectedPlayer(player);
+    setRequestReportFormOpen(true);
+  };
+
+  const handleSaveReportRequest = (scoutId: string, notify: boolean) => {
+    if (!selectedPlayer) return;
+
+    setPlayers(players.map(p => p.id === selectedPlayer.id ? { ...p, assignedScoutId: scoutId, reportRequestedBy: 'u1' } : p));
+    
+    toast({
+        title: 'Informe Solicitado',
+        description: `Se ha solicitado un informe de ${selectedPlayer.firstName} ${selectedPlayer.lastName}. ${notify ? 'El ojeador será notificado.' : ''}`
+    });
+
+    setRequestReportFormOpen(false);
+    setSelectedPlayer(null);
+  };
   
   return (
     <>
@@ -70,6 +93,7 @@ export default function PlayerManagementTab() {
               onAssignScout={handleAssignScout}
               onEdit={handleEditPlayer}
               onDelete={handleDeletePlayer}
+              onRequestReport={handleRequestReport}
           />
         </CardContent>
       </Card>
@@ -78,6 +102,13 @@ export default function PlayerManagementTab() {
         onOpenChange={setPlayerFormOpen}
         onSave={handleSavePlayer}
         player={selectedPlayer}
+      />
+      <RequestReportForm
+        isOpen={isRequestReportFormOpen}
+        onOpenChange={setRequestReportFormOpen}
+        onSave={handleSaveReportRequest}
+        player={selectedPlayer}
+        scouts={users.filter(u => u.role === 'scout')}
       />
     </>
   );

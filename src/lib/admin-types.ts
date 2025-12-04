@@ -62,6 +62,7 @@ export type Player = {
     };
     recommendation?: Recommendation;
     assignedScoutId?: string;
+    reportRequestedBy?: string; // admin user ID who requested the report
 };
 
 export type PlayerReport = {

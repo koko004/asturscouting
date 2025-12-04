@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { matches, users, players as initialPlayers, playerReports as allReports } from '@/lib/admin-data';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Lock, Unlock, User, MapPin, Target, Mail, ShieldCheck, PlusCircle } from 'lucide-react';
+import { ArrowRight, Lock, Unlock, User, MapPin, Target, Mail, ShieldCheck, PlusCircle, FileText } from 'lucide-react';
 import PageHeader from '@/components/page-header';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -49,6 +49,8 @@ export default function DashboardPage() {
   const [isReportFormOpen, setReportFormOpen] = useState(false);
   const [selectedPlayerForReport, setSelectedPlayerForReport] = useState<Player | null>(null);
   const [playerReports, setPlayerReports] = useState(allReports);
+  
+  const requestedPlayerReports = assignedPlayers.filter(p => p.reportRequestedBy);
 
 
   const getScoutName = (scoutId: string | undefined) => {
@@ -95,16 +97,67 @@ export default function DashboardPage() {
                       <Mail className="h-4 w-4" />
                       {currentUser.email}
                   </div>
-                  <div className="flex items-center gap-1.5">
+                   <div className="flex items-center gap-1.5">
                       <ShieldCheck className="h-4 w-4" />
                       <Badge variant={currentUser.role === 'admin' ? 'destructive' : 'secondary'}>
-                          {currentUser.role}
+                          {currentUser.role === 'admin' ? 'Administrador' : 'Ojeador'}
                       </Badge>
                   </div>
                 </div>
               </div>
             </CardContent>
           </Card>
+        )}
+        
+        {requestedPlayerReports.length > 0 && (
+          <div>
+            <h2 className="text-2xl font-bold tracking-tight mb-4">Informes de Jugadores Solicitados</h2>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+              {requestedPlayerReports.map((player) => (
+                <Card key={player.id} className="flex flex-col transition-all hover:shadow-lg border-primary">
+                  <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <FileText className="text-primary" />
+                        {player.firstName} {player.lastName}
+                      </CardTitle>
+                      <CardDescription>{player.teamName}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex flex-1 flex-col justify-between gap-4">
+                    <Image
+                        src={`https://picsum.photos/seed/${player.id}/200/280`}
+                        alt={`Foto de ${player.firstName} ${player.lastName}`}
+                        width={200}
+                        height={280}
+                        className="w-full h-auto rounded-md object-cover"
+                        data-ai-hint="person face"
+                    />
+                    <div className="space-y-2 text-sm text-muted-foreground">
+                       <div className="flex items-center gap-2">
+                          <Target className="h-4 w-4" />
+                          <span>Posición: {player.position}</span>
+                        </div>
+                      <div className="flex items-center gap-2">
+                        <User className="h-4 w-4" />
+                        <span>Solicitado por: {getScoutName(player.reportRequestedBy)}</span>
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <Button onClick={() => handleOpenReportForm(player)} >
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        Crear Informe
+                      </Button>
+                      <Button asChild className="w-full" variant="outline">
+                        <Link href={`/players/${player.id}`}>
+                          Ver Perfil Completo
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                        </Link>
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
         )}
 
         <div>
@@ -153,10 +206,6 @@ export default function DashboardPage() {
                       <User className="h-4 w-4" />
                       <span>{getScoutName(match.assignedScoutId)}</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4" />
-                      <span>{match.stadium}</span>
-                    </div>
                   </div>
                   <div className="flex items-center justify-between text-sm text-muted-foreground">
                     <ClientFormattedDate date={match.date} />
@@ -178,9 +227,9 @@ export default function DashboardPage() {
         <Separator />
 
         <div>
-          <h2 className="text-2xl font-bold tracking-tight mb-4">Jugadores Asignados</h2>
+          <h2 className="text-2xl font-bold tracking-tight mb-4">Seguimiento de Jugadores</h2>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {assignedPlayers.length > 0 ? assignedPlayers.map((player) => (
+            {assignedPlayers.filter(p => !p.reportRequestedBy).length > 0 ? assignedPlayers.filter(p => !p.reportRequestedBy).map((player) => (
               <Card key={player.id} className="flex flex-col transition-all hover:shadow-lg">
                 <CardHeader>
                     <CardTitle>{player.firstName} {player.lastName}</CardTitle>

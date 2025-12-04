@@ -47,9 +47,10 @@ interface PlayerManagementTableProps {
   onAssignScout: (playerId: string, scoutId: string) => void;
   onEdit: (player: Player) => void;
   onDelete: (playerId: string) => void;
+  onRequestReport: (player: Player) => void;
 }
 
-export default function PlayerManagementTable({ players, users, onAssignScout, onEdit, onDelete }: PlayerManagementTableProps) {
+export default function PlayerManagementTable({ players, users, onAssignScout, onEdit, onDelete, onRequestReport }: PlayerManagementTableProps) {
   
   const scouts = users.filter(u => u.role === 'scout');
 
@@ -120,6 +121,7 @@ export default function PlayerManagementTable({ players, users, onAssignScout, o
                     <DropdownMenuLabel>Acciones</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => onEdit(player)}>Editar</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onRequestReport(player)}>Solicitar Informe</DropdownMenuItem>
                     <AlertDialogTrigger asChild>
                       <DropdownMenuItem className="text-destructive focus:text-destructive">
                         Eliminar
